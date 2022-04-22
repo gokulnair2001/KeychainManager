@@ -13,7 +13,7 @@ enum KeychainError: Error {
     case noPassword
 }
 
-enum secureClassType: String {
+public enum secureClassType: String {
     
     case webCredentials
     case genericPassword
