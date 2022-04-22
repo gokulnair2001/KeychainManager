@@ -7,7 +7,7 @@
 
 import Foundation
 
-class KeychainManager {
+open class KeychainManager {
     
     private var accessGroup: String = ""
     private var keyPrefix: String = ""
