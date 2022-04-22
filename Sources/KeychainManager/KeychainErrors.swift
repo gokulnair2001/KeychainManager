@@ -7,23 +7,10 @@
 
 import Foundation
 
+//MARK: - Keychain Internal error types
+
 enum KeychainError: Error {
     case duplicateEntry
     case unknown(OSStatus)
     case noPassword
-}
-
-public enum secureClassType: String {
-    
-    case webCredentials
-    case genericPassword
-
-    func value() -> String {
-        switch self {
-        case .webCredentials:
-            return kSecClassInternetPassword as String
-        case .genericPassword:
-            return kSecClassGenericPassword as String
-        }
-    }
 }
