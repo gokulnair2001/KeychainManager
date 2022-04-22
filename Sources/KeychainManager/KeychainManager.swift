@@ -62,7 +62,7 @@ extension KeychainManager {
     // MARK: Method to save boolean values
     public func set(value: Bool, service: String, account: String) {
         let bytes: [UInt8] = value ? [1] : [0]
-       
+        
         do {
             try set(value:  Data(bytes), service: service, account: account)
         }catch {
@@ -94,7 +94,7 @@ extension KeychainManager {
     private func set(server: String, user: String, password: String) throws {
         
         let encryptedPassword = password.data(using: .utf8)
-
+        
         var query: [String : AnyObject] = [
             KeychainManagerConstants.classType   :  kSecClassInternetPassword,
             KeychainManagerConstants.account :  user as AnyObject,
@@ -160,7 +160,7 @@ extension KeychainManager {
     public func getBool(service: String, account: String) -> Bool{
         guard let data = get(service: service, account: account) else {return false}
         guard let firstBit = data.first else {return false}
-       
+        
         return firstBit == 1
     }
     
@@ -186,27 +186,27 @@ extension KeychainManager {
     
     //MARK: GET WEB CREDENTIALS DRIVER
     private func get(server: String, account: String) -> Data? {
-       
-       var query: [String: AnyObject] = [
-           KeychainManagerConstants.classType   :  kSecClassInternetPassword,
-           KeychainManagerConstants.account     :  account as AnyObject,
-           KeychainManagerConstants.server      :  server as AnyObject,
-           KeychainManagerConstants.returnData  :  kCFBooleanTrue,
-           KeychainManagerConstants.matchLimit  :  kSecMatchLimitOne,
-       ]
-       
-       if isAccessSharing() {
-           query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
-           query.updateValue(kCFBooleanTrue, forKey: KeychainManagerConstants.returnAttributes)
-       }
-       
-       var result: AnyObject?
-       let status = SecItemCopyMatching(query as CFDictionary, &result)
-       
-       print("Read Status: \(status)")
-       
-       return result as? Data
-   }
+        
+        var query: [String: AnyObject] = [
+            KeychainManagerConstants.classType   :  kSecClassInternetPassword,
+            KeychainManagerConstants.account     :  account as AnyObject,
+            KeychainManagerConstants.server      :  server as AnyObject,
+            KeychainManagerConstants.returnData  :  kCFBooleanTrue,
+            KeychainManagerConstants.matchLimit  :  kSecMatchLimitOne,
+        ]
+        
+        if isAccessSharing() {
+            query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
+            query.updateValue(kCFBooleanTrue, forKey: KeychainManagerConstants.returnAttributes)
+        }
+        
+        var result: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        
+        print("Read Status: \(status)")
+        
+        return result as? Data
+    }
     
     //MARK: Method to get Web Credential value
     public func get(server: String, account: String) -> String {
@@ -219,8 +219,8 @@ extension KeychainManager {
     }
     
     //MARK: - GET ALL VALUES
-    func getAllValues(secClass: secureClassType) -> [String:String] {
-
+    public func getAllValues(secClass: secureClassType) -> [String:String] {
+        
         var query: [String: AnyObject] = [
             KeychainManagerConstants.classType as String        :  secClass.value() as AnyObject,
             KeychainManagerConstants.returnData as String       :  kCFBooleanTrue,
@@ -228,30 +228,30 @@ extension KeychainManager {
             KeychainManagerConstants.returnReference as String  :  kCFBooleanTrue,
             KeychainManagerConstants.matchLimit as String       :  kSecMatchLimitAll
         ]
-
+        
         if isAccessSharing() {
             query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
             query.updateValue(kCFBooleanTrue, forKey: KeychainManagerConstants.returnAttributes)
         }
         
         var result: AnyObject?
-
+        
         let lastResultCode = withUnsafeMutablePointer(to: &result) {
             SecItemCopyMatching(query as CFDictionary, UnsafeMutablePointer($0))
         }
-
+        
         var values = [String:String]()
         if lastResultCode == noErr {
             let array = result as? Array<Dictionary<String, Any>>
-
+            
             for item in array! {
                 if let key = item[kSecAttrAccount as String] as? String,
-                    let value = item[kSecValueData as String] as? Data {
+                   let value = item[kSecValueData as String] as? Data {
                     values[key] = String(data: value, encoding:.utf8)
                 }
             }
         }
-
+        
         return values
     }
 }
@@ -318,7 +318,7 @@ extension KeychainManager {
     
     //MARK: UPDATE WEB CREDENTIALS DRIVER
     private func update(account: String, password: Data) throws {
-      
+        
         let attributes: [String: Any] = [
             
             KeychainManagerConstants.account    :  account as AnyObject,
@@ -358,7 +358,7 @@ extension KeychainManager {
 extension KeychainManager {
     
     //MARK: DELETE SELECTED ITEM
-    func delete(service: String, account: String) throws {
+    public func delete(service: String, account: String) throws {
         
         var query: [String: AnyObject] = [
             KeychainManagerConstants.classType   :  kSecClassGenericPassword,
@@ -376,7 +376,7 @@ extension KeychainManager {
     }
     
     //MARK: DELETE ALL ITEMS
-    func clearKeyChain() throws {
+    public func clearKeyChain() throws {
         let query: [String: AnyObject] = [
             kSecClass as String: kSecClassGenericPassword,
         ]
@@ -387,7 +387,7 @@ extension KeychainManager {
     }
     
     //MARK: - DLETE WEB CREDENTIALS
-    func delete(server: String, account: String) throws {
+    public func delete(server: String, account: String) throws {
         
         var query: [String: AnyObject] = [
             KeychainManagerConstants.classType   :  kSecClassInternetPassword,
@@ -416,9 +416,4 @@ extension KeychainManager {
             return true
         }
     }
-}
-
-//MARK: - Testings
-extension KeychainManager {
- 
 }
