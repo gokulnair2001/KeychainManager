@@ -9,8 +9,8 @@ import Foundation
 
 open class KeychainManager {
     
-    private var accessGroup: String = ""
-    private var keyPrefix: String = ""
+    fileprivate var accessGroup: String = ""
+    fileprivate var keyPrefix: String = ""
     
     /// Initialiser to use only KeyPrefix
     public init(keyPrefix: String) {
@@ -35,7 +35,7 @@ open class KeychainManager {
 extension KeychainManager {
     
     //MARK: SET DRIVER CODE
-    private func set(value: Data, service: String, account: String) throws {
+    fileprivate func set(value: Data, service: String, account: String) throws {
         
         var query: [String: AnyObject] = [
             KeychainManagerConstants.classType   :  kSecClassGenericPassword,
@@ -91,7 +91,7 @@ extension KeychainManager {
     }
     
     //MARK: SET WEB CREDENTIALS DRIVER
-    private func set(server: String, user: String, password: String) throws {
+    fileprivate func set(server: String, user: String, password: String) throws {
         
         let encryptedPassword = password.data(using: .utf8)
         
@@ -133,7 +133,7 @@ extension KeychainManager {
 extension KeychainManager {
     
     //MARK: GET DRIVER CODE
-    private func get(service: String, account: String) -> Data? {
+    fileprivate func get(service: String, account: String) -> Data? {
         
         var query: [String: AnyObject] = [
             KeychainManagerConstants.classType   :  kSecClassGenericPassword,
@@ -185,7 +185,7 @@ extension KeychainManager {
     }
     
     //MARK: GET WEB CREDENTIALS DRIVER
-    private func get(server: String, account: String) -> Data? {
+    fileprivate func get(server: String, account: String) -> Data? {
         
         var query: [String: AnyObject] = [
             KeychainManagerConstants.classType   :  kSecClassInternetPassword,
@@ -260,7 +260,7 @@ extension KeychainManager {
 extension KeychainManager {
     
     //MARK: UPDATE DRIVER CODE
-    private func update(value: Data, account: String)  throws {
+    fileprivate func update(value: Data, account: String)  throws {
         
         let attributes: [String: Any] = [
             KeychainManagerConstants.account    :  (keyPrefix + account) as AnyObject,
@@ -317,7 +317,7 @@ extension KeychainManager {
     }
     
     //MARK: UPDATE WEB CREDENTIALS DRIVER
-    private func update(account: String, password: Data) throws {
+    fileprivate func update(account: String, password: Data) throws {
         
         let attributes: [String: Any] = [
             
