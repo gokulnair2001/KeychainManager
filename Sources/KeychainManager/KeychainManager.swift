@@ -67,7 +67,7 @@ extension KeychainManager {
             KeychainManagerConstants.classType  :  kSecClassGenericPassword,
             KeychainManagerConstants.service    :  service as AnyObject,
             KeychainManagerConstants.account    :  (keyPrefix + account) as AnyObject,
-            KeychainManagerConstants.accessType : accessibility.value() as AnyObject,
+           // KeychainManagerConstants.accessType : accessibility.value() as AnyObject,
             KeychainManagerConstants.valueData  :  value as AnyObject,
         ]
         
@@ -126,7 +126,7 @@ extension KeychainManager {
             KeychainManagerConstants.classType  :  kSecClassInternetPassword,
             KeychainManagerConstants.account    :  user as AnyObject,
             KeychainManagerConstants.server     :  server as AnyObject,
-            KeychainManagerConstants.accessType : accessibility.value() as AnyObject,
+           // KeychainManagerConstants.accessType : accessibility.value() as AnyObject,
             KeychainManagerConstants.valueData  :  encryptedPassword as AnyObject,
         ]
         
