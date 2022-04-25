@@ -362,17 +362,17 @@ extension KeychainManager {
         
         var accessErrorUnmanaged: Unmanaged<CFError>? = nil
         
+        let access = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility.value(), [], &accessErrorUnmanaged)
+        
         let attributes: [String: Any] = [
             
             KeychainManagerConstants.account    :  account as AnyObject,
             KeychainManagerConstants.valueData  :  password as AnyObject,
+            KeychainManagerConstants.accessType :  access as AnyObject,
         ]
-        
-        let access = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility.value(), [], &accessErrorUnmanaged)
         
         var query: [String: AnyObject] = [
             KeychainManagerConstants.classType  :  kSecClassInternetPassword,
-            KeychainManagerConstants.accessType :  access as AnyObject,
         ]
         
         if isAccessSharing() {
