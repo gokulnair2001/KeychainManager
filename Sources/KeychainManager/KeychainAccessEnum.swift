@@ -16,7 +16,7 @@ public enum accessibilityType {
     
     //MARK: - Method to return Enum value
     
-    private func value() -> String {
+     func value() -> String {
         switch self {
         case .passCodeSet:
             return KeychainManagerConstants.passcodeSet
