@@ -64,11 +64,11 @@ extension KeychainManager {
     fileprivate func set(value: Data, service: String, account: String) throws {
         
         var query: [String: AnyObject] = [
-            KeychainManagerConstants.classType   :  kSecClassGenericPassword,
-            KeychainManagerConstants.service :  service as AnyObject,
-            KeychainManagerConstants.account :  (keyPrefix + account) as AnyObject,
+            KeychainManagerConstants.classType  :  kSecClassGenericPassword,
+            KeychainManagerConstants.service    :  service as AnyObject,
+            KeychainManagerConstants.account    :  (keyPrefix + account) as AnyObject,
             KeychainManagerConstants.accessType : accessibility.value() as AnyObject,
-            KeychainManagerConstants.valueData   :  value as AnyObject,
+            KeychainManagerConstants.valueData  :  value as AnyObject,
         ]
         
         if isAccessSharing() {
@@ -123,11 +123,11 @@ extension KeychainManager {
         let encryptedPassword = password.data(using: .utf8)
         
         var query: [String : AnyObject] = [
-            KeychainManagerConstants.classType   :  kSecClassInternetPassword,
-            KeychainManagerConstants.account :  user as AnyObject,
-            KeychainManagerConstants.server  :  server as AnyObject,
+            KeychainManagerConstants.classType  :  kSecClassInternetPassword,
+            KeychainManagerConstants.account    :  user as AnyObject,
+            KeychainManagerConstants.server     :  server as AnyObject,
             KeychainManagerConstants.accessType : accessibility.value() as AnyObject,
-            KeychainManagerConstants.valueData   :  encryptedPassword as AnyObject,
+            KeychainManagerConstants.valueData  :  encryptedPassword as AnyObject,
         ]
         
         if isAccessSharing() {
@@ -389,9 +389,9 @@ extension KeychainManager {
     public func delete(service: String, account: String) throws {
         
         var query: [String: AnyObject] = [
-            KeychainManagerConstants.classType   :  kSecClassGenericPassword,
-            KeychainManagerConstants.service :  service as AnyObject,
-            KeychainManagerConstants.account :  (keyPrefix + account) as AnyObject,
+            KeychainManagerConstants.classType  :  kSecClassGenericPassword,
+            KeychainManagerConstants.service    :  service as AnyObject,
+            KeychainManagerConstants.account    :  (keyPrefix + account) as AnyObject,
         ]
         
         if isAccessSharing() {
@@ -418,9 +418,9 @@ extension KeychainManager {
     public func delete(server: String, account: String) throws {
         
         var query: [String: AnyObject] = [
-            KeychainManagerConstants.classType   :  kSecClassInternetPassword,
-            KeychainManagerConstants.server :  server as AnyObject,
-            KeychainManagerConstants.account :  account as AnyObject,
+            KeychainManagerConstants.classType  :  kSecClassInternetPassword,
+            KeychainManagerConstants.server     :  server as AnyObject,
+            KeychainManagerConstants.account    :  account as AnyObject,
         ]
         
         if isAccessSharing() {

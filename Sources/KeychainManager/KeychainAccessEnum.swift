@@ -8,7 +8,7 @@
 import Foundation
 
 public enum accessibilityType {
-    case passCodeSet
+    case passcodeSet
     case unlocked
     case unlockedTDO
     case firstUnlock
@@ -18,7 +18,7 @@ public enum accessibilityType {
     
      func value() -> String {
         switch self {
-        case .passCodeSet:
+        case .passcodeSet:
             return KeychainManagerConstants.passcodeSet
         case .unlocked:
             return KeychainManagerConstants.unlocked
