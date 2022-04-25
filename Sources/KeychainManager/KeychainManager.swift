@@ -360,14 +360,19 @@ extension KeychainManager {
     //MARK: UPDATE WEB CREDENTIALS DRIVER
     fileprivate func update(account: String, password: Data) throws {
         
+        var accessErrorUnmanaged: Unmanaged<CFError>? = nil
+        
         let attributes: [String: Any] = [
             
             KeychainManagerConstants.account    :  account as AnyObject,
             KeychainManagerConstants.valueData  :  password as AnyObject,
         ]
         
+        let access = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility.value(), [], &accessErrorUnmanaged)
+        
         var query: [String: AnyObject] = [
-            KeychainManagerConstants.classType : kSecClassInternetPassword,
+            KeychainManagerConstants.classType  :  kSecClassInternetPassword,
+            KeychainManagerConstants.accessType :  access as AnyObject,
         ]
         
         if isAccessSharing() {
@@ -377,9 +382,17 @@ extension KeychainManager {
         
         let status = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
         
-        guard status != errSecItemNotFound else { throw KeychainError.noPassword }
+        guard accessErrorUnmanaged != nil else {
+            throw KeychainError.accessError
+        }
         
-        guard status == errSecSuccess else { throw KeychainError.unknown(status) }
+        guard status != errSecItemNotFound else {
+            throw KeychainError.noPassword
+        }
+        
+        guard status == errSecSuccess else {
+            throw KeychainError.unknown(status)
+        }
     }
     
     //MARK: Update Web Credentials
