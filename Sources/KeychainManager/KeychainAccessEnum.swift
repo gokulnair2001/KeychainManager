@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum accessType {
+public enum accessibilityType {
     case passCodeSet
     case unlocked
     case unlockedTDO
