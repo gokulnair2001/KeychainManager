@@ -9,7 +9,7 @@ import Foundation
 
 //MARK: - Keychain Security Class Types
 
-public enum secureClassType: String {
+public enum secureClassType {
     
     case webCredentials
     case genericPassword
@@ -17,9 +17,9 @@ public enum secureClassType: String {
     func value() -> String {
         switch self {
         case .webCredentials:
-            return kSecClassInternetPassword as String
+            return KeychainManagerConstants.internetPassword
         case .genericPassword:
-            return kSecClassGenericPassword as String
+            return KeychainManagerConstants.genericPassword
         }
     }
 }
