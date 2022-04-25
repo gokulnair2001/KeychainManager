@@ -16,18 +16,18 @@ public enum accessibilityType {
     
     //MARK: - Method to return Enum value
     
-     func value() -> String {
+     func value() -> CFString {
         switch self {
         case .passcodeSet:
-            return KeychainManagerConstants.passcodeSet
+            return kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly
         case .unlocked:
-            return KeychainManagerConstants.unlocked
+            return kSecAttrAccessibleWhenUnlocked
         case .unlockedTDO:
-            return KeychainManagerConstants.unlockedTDO
+            return kSecAttrAccessibleWhenUnlockedThisDeviceOnly
         case .firstUnlock:
-            return KeychainManagerConstants.firstUnlock
+            return kSecAttrAccessibleAfterFirstUnlock
         case .firstUnlockTDO:
-            return KeychainManagerConstants.firstUnlockTDO
+            return kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
         }
     }
 }

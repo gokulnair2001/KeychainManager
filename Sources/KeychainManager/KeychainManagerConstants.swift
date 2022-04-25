@@ -37,19 +37,6 @@ public struct KeychainManagerConstants {
     
     static var genericPassword: String {return toString(kSecClassGenericPassword)}
     
-    //MARK: - Keychain Access Type
-    
-    static var passcodeSet: String {return toString(kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly)}
-    
-    static var unlocked: String {return toString(kSecAttrAccessibleWhenUnlocked)}
-   
-    static var unlockedTDO: String {return toString(kSecAttrAccessibleWhenUnlockedThisDeviceOnly)}
-    
-    static var firstUnlock: String {return toString(kSecAttrAccessibleAfterFirstUnlock)}
-    
-    static var firstUnlockTDO: String {return toString(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly)}
-    
-    
     //MARK: - Method to return string type
     
     static func toString(_ value: CFString) -> String {

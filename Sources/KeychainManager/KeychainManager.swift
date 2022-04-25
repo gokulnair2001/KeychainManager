@@ -62,12 +62,15 @@ extension KeychainManager {
     
     //MARK: SET DRIVER CODE
     fileprivate func set(value: Data, service: String, account: String) throws {
+        var accessErrorUnmanaged: Unmanaged<CFError>? = nil
+        
+        let access = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility.value(), [], &accessErrorUnmanaged)
         
         var query: [String: AnyObject] = [
             KeychainManagerConstants.classType  :  kSecClassGenericPassword,
             KeychainManagerConstants.service    :  service as AnyObject,
             KeychainManagerConstants.account    :  (keyPrefix + account) as AnyObject,
-           // KeychainManagerConstants.accessType : accessibility.value() as AnyObject,
+            KeychainManagerConstants.accessType :  access as AnyObject,
             KeychainManagerConstants.valueData  :  value as AnyObject,
         ]
         
@@ -76,6 +79,10 @@ extension KeychainManager {
         }
         
         let status = SecItemAdd(query as CFDictionary, nil)
+        
+        guard accessErrorUnmanaged != nil else {
+            throw KeychainError.accessError
+        }
         
         guard status != errSecDuplicateItem else {
             throw KeychainError.duplicateEntry
@@ -119,18 +126,16 @@ extension KeychainManager {
     
     //MARK: SET WEB CREDENTIALS DRIVER
     fileprivate func set(server: String, user: String, password: String) throws {
-        var error: Unmanaged<CFError>? = nil
+        var accessErrorUnmanaged: Unmanaged<CFError>? = nil
         
         let encryptedPassword = password.data(using: .utf8)
-        let access = SecAccessControlCreateWithFlags(nil,  // Use the default allocator.
-                                                     kSecAttrAccessibleWhenUnlocked,
-                                                     [],
-                                                     &error);
+        let access = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility.value(), [], &accessErrorUnmanaged)
+        
         var query: [String : AnyObject] = [
             KeychainManagerConstants.classType  :  kSecClassInternetPassword,
             KeychainManagerConstants.account    :  user as AnyObject,
             KeychainManagerConstants.server     :  server as AnyObject,
-            KeychainManagerConstants.accessType : access as AnyObject,//accessibility.value() as AnyObject,
+            KeychainManagerConstants.accessType :  access as AnyObject,
             KeychainManagerConstants.valueData  :  encryptedPassword as AnyObject,
         ]
         
@@ -139,6 +144,10 @@ extension KeychainManager {
         }
         
         let status = SecItemAdd(query as CFDictionary, nil)
+        
+        guard accessErrorUnmanaged != nil else {
+            throw KeychainError.accessError
+        }
         
         guard status != errSecDuplicateItem else {
             throw KeychainError.duplicateEntry

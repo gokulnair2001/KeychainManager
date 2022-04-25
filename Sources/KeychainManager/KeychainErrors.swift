@@ -13,4 +13,5 @@ enum KeychainError: Error {
     case duplicateEntry
     case unknown(OSStatus)
     case noPassword
+    case accessError
 }
