@@ -119,14 +119,18 @@ extension KeychainManager {
     
     //MARK: SET WEB CREDENTIALS DRIVER
     fileprivate func set(server: String, user: String, password: String) throws {
+        var error: Unmanaged<CFError>? = nil
         
         let encryptedPassword = password.data(using: .utf8)
-        
+        let access = SecAccessControlCreateWithFlags(nil,  // Use the default allocator.
+                                                     kSecAttrAccessibleWhenUnlocked,
+                                                     [],
+                                                     &error);
         var query: [String : AnyObject] = [
             KeychainManagerConstants.classType  :  kSecClassInternetPassword,
             KeychainManagerConstants.account    :  user as AnyObject,
             KeychainManagerConstants.server     :  server as AnyObject,
-           // KeychainManagerConstants.accessType : accessibility.value() as AnyObject,
+            KeychainManagerConstants.accessType : access as AnyObject,//accessibility.value() as AnyObject,
             KeychainManagerConstants.valueData  :  encryptedPassword as AnyObject,
         ]
         
