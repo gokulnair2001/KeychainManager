@@ -11,10 +11,21 @@ open class KeychainManager {
     
     fileprivate var accessGroup: String = ""
     fileprivate var keyPrefix: String = ""
+    fileprivate var accessibility: accessibilityType = .unlocked
     
     /// Initialiser to use only KeyPrefix
     public init(keyPrefix: String) {
         self.keyPrefix = keyPrefix
+    }
+    
+    /// Initialiser to use only Access Group
+    public init (accessGroup: String) {
+        self.accessGroup = accessGroup
+    }
+    
+    /// Initialiser to use only accessibility type
+    public init(accessibility: accessibilityType) {
+        self.accessibility = accessibility
     }
     
     /// Initialiser to use KeyPrefix and Access Group
@@ -22,9 +33,24 @@ open class KeychainManager {
         self.accessGroup = accessGroup
         self.keyPrefix = keyPrefix
     }
-    /// Initialiser to use only Access Group
-    public init (accessGroup: String) {
+   
+    /// Initialiser to use keyPrefix & accessibility
+    public init(keyPrefix: String, accessibility: accessibilityType) {
+        self.keyPrefix = keyPrefix
+        self.accessibility = accessibility
+    }
+    
+    /// Initialiser to use Access group & accessibility
+    public init(accessGroup: String, accessibility: accessibilityType) {
         self.accessGroup = accessGroup
+        self.accessibility = accessibility
+    }
+    
+    /// Initialiser to use Access group, keyPrefix & accessibility
+    public init(accessGroup: String, keyPrefix: String, accessibility: accessibilityType) {
+        self.accessGroup = accessGroup
+        self.keyPrefix = keyPrefix
+        self.accessibility = accessibility
     }
     
     /// Empty Initialiser to use generic keyChain
@@ -36,12 +62,16 @@ extension KeychainManager {
     
     //MARK: SET DRIVER CODE
     fileprivate func set(value: Data, service: String, account: String) throws {
+        var accessErrorUnmanaged: Unmanaged<CFError>? = nil
+        
+        let access = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility.value(), [], &accessErrorUnmanaged)
         
         var query: [String: AnyObject] = [
-            KeychainManagerConstants.classType   :  kSecClassGenericPassword,
-            KeychainManagerConstants.service :  service as AnyObject,
-            KeychainManagerConstants.account :  (keyPrefix + account) as AnyObject,
-            KeychainManagerConstants.valueData   :  value as AnyObject,
+            KeychainManagerConstants.classType  :  kSecClassGenericPassword,
+            KeychainManagerConstants.service    :  service as AnyObject,
+            KeychainManagerConstants.account    :  (keyPrefix + account) as AnyObject,
+            KeychainManagerConstants.accessType :  access as AnyObject,
+            KeychainManagerConstants.valueData  :  value as AnyObject,
         ]
         
         if isAccessSharing() {
@@ -49,6 +79,10 @@ extension KeychainManager {
         }
         
         let status = SecItemAdd(query as CFDictionary, nil)
+        
+        guard accessErrorUnmanaged != nil else {
+            throw KeychainError.accessError
+        }
         
         guard status != errSecDuplicateItem else {
             throw KeychainError.duplicateEntry
@@ -92,14 +126,17 @@ extension KeychainManager {
     
     //MARK: SET WEB CREDENTIALS DRIVER
     fileprivate func set(server: String, user: String, password: String) throws {
+        var accessErrorUnmanaged: Unmanaged<CFError>? = nil
         
         let encryptedPassword = password.data(using: .utf8)
+        let access = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility.value(), [], &accessErrorUnmanaged)
         
         var query: [String : AnyObject] = [
-            KeychainManagerConstants.classType   :  kSecClassInternetPassword,
-            KeychainManagerConstants.account :  user as AnyObject,
-            KeychainManagerConstants.server  :  server as AnyObject,
-            KeychainManagerConstants.valueData   :  encryptedPassword as AnyObject,
+            KeychainManagerConstants.classType  :  kSecClassInternetPassword,
+            KeychainManagerConstants.account    :  user as AnyObject,
+            KeychainManagerConstants.server     :  server as AnyObject,
+            KeychainManagerConstants.accessType :  access as AnyObject,
+            KeychainManagerConstants.valueData  :  encryptedPassword as AnyObject,
         ]
         
         if isAccessSharing() {
@@ -107,6 +144,10 @@ extension KeychainManager {
         }
         
         let status = SecItemAdd(query as CFDictionary, nil)
+        
+        guard accessErrorUnmanaged != nil else {
+            throw KeychainError.accessError
+        }
         
         guard status != errSecDuplicateItem else {
             throw KeychainError.duplicateEntry
@@ -361,9 +402,9 @@ extension KeychainManager {
     public func delete(service: String, account: String) throws {
         
         var query: [String: AnyObject] = [
-            KeychainManagerConstants.classType   :  kSecClassGenericPassword,
-            KeychainManagerConstants.service :  service as AnyObject,
-            KeychainManagerConstants.account :  (keyPrefix + account) as AnyObject,
+            KeychainManagerConstants.classType  :  kSecClassGenericPassword,
+            KeychainManagerConstants.service    :  service as AnyObject,
+            KeychainManagerConstants.account    :  (keyPrefix + account) as AnyObject,
         ]
         
         if isAccessSharing() {
@@ -390,9 +431,9 @@ extension KeychainManager {
     public func delete(server: String, account: String) throws {
         
         var query: [String: AnyObject] = [
-            KeychainManagerConstants.classType   :  kSecClassInternetPassword,
-            KeychainManagerConstants.server :  server as AnyObject,
-            KeychainManagerConstants.account :  account as AnyObject,
+            KeychainManagerConstants.classType  :  kSecClassInternetPassword,
+            KeychainManagerConstants.server     :  server as AnyObject,
+            KeychainManagerConstants.account    :  account as AnyObject,
         ]
         
         if isAccessSharing() {
