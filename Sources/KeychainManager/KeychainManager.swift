@@ -61,7 +61,7 @@ open class KeychainManager {
 extension KeychainManager {
     
     //MARK: SET DRIVER CODE
-    fileprivate func set(value: Data, service: String, account: String) throws {
+    fileprivate func set(value: Data, service: String, account: String, access: accessibilityType) throws {
         var accessErrorUnmanaged: Unmanaged<CFError>? = nil
         
         let access = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility.value(), [], &accessErrorUnmanaged)
@@ -94,33 +94,33 @@ extension KeychainManager {
     }
     
     // MARK: Method to save boolean values
-    public func set(value: Bool, service: String, account: String) {
+    public func set(value: Bool, service: String, account: String, withAccess: accessibilityType? = nil) {
         let bytes: [UInt8] = value ? [1] : [0]
         
         do {
-            try set(value:  Data(bytes), service: service, account: account)
+            try set(value:  Data(bytes), service: service, account: account, access: withAccess ?? accessibility)
         }catch {
             print(error.localizedDescription)
         }
     }
     
     // MARK: Method to store String directly to keychain
-    public func set(value: String, service: String, account: String) {
+    public func set(value: String, service: String, account: String, withAccess: accessibilityType? = nil) {
         
         do {
-            try set(value: value.data(using: .utf8) ?? Data(), service: service, account: account)
+            try set(value: value.data(using: .utf8) ?? Data(), service: service, account: account, access: withAccess ?? accessibility)
         }catch {
             print(error.localizedDescription)
         }
     }
     
     // MARK: Method to save Custom Data Object
-    public func set <T: Codable> (object: T, service: String, account: String) {
+    public func set <T: Codable> (object: T, service: String, account: String, withAccess: accessibilityType? = nil) {
         
         guard let userData = try? JSONEncoder().encode(object) else { return }
         
         do {
-            try? KeychainManager().set(value: userData, service: service, account: account)
+            try? KeychainManager().set(value: userData, service: service, account: account, access: withAccess ?? accessibility)
         }
     }
     
