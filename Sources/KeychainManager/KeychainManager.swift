@@ -480,8 +480,9 @@ extension KeychainManager {
         if isSynchronizable {
             print("sync ✅")
             var result: [String: AnyObject] = queryItems
-            let state = isSynchronizable ? kCFBooleanTrue as AnyObject : kSecAttrSynchronizableAny as AnyObject
-            result.updateValue(state, forKey: KeychainManagerConstants.synchronizable)
+           // let state = isSynchronizable ? kCFBooleanTrue as AnyObject : kSecAttrSynchronizableAny as AnyObject
+            result[KeychainManagerConstants.synchronizable] = isSynchronizable ? kCFBooleanTrue as AnyObject : kSecAttrSynchronizableAny as AnyObject
+           // result.updateValue(state, forKey: KeychainManagerConstants.synchronizable)
             return result
         }
         
