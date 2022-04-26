@@ -64,13 +64,13 @@ extension KeychainManager {
     fileprivate func set(value: Data, service: String, account: String, access: accessibilityType) throws {
         var accessErrorUnmanaged: Unmanaged<CFError>? = nil
         
-        let access = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility.value(), [], &accessErrorUnmanaged)
+        let selectedAccess = SecAccessControlCreateWithFlags(kCFAllocatorDefault, access.value(), [], &accessErrorUnmanaged)
         
         var query: [String: AnyObject] = [
             KeychainManagerConstants.classType  :  kSecClassGenericPassword,
             KeychainManagerConstants.service    :  service as AnyObject,
             KeychainManagerConstants.account    :  (keyPrefix + account) as AnyObject,
-            KeychainManagerConstants.accessType :  access as AnyObject,
+            KeychainManagerConstants.accessType :  selectedAccess as AnyObject,
             KeychainManagerConstants.valueData  :  value as AnyObject,
         ]
         
@@ -125,17 +125,17 @@ extension KeychainManager {
     }
     
     //MARK: SET WEB CREDENTIALS DRIVER
-    fileprivate func set(server: String, user: String, password: String) throws {
+    fileprivate func set(server: String, user: String, password: String, access: accessibilityType) throws {
         var accessErrorUnmanaged: Unmanaged<CFError>? = nil
         
         let encryptedPassword = password.data(using: .utf8)
-        let access = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility.value(), [], &accessErrorUnmanaged)
+        let selectedAccess = SecAccessControlCreateWithFlags(kCFAllocatorDefault, access.value(), [], &accessErrorUnmanaged)
         
         var query: [String : AnyObject] = [
             KeychainManagerConstants.classType  :  kSecClassInternetPassword,
             KeychainManagerConstants.account    :  user as AnyObject,
             KeychainManagerConstants.server     :  server as AnyObject,
-            KeychainManagerConstants.accessType :  access as AnyObject,
+            KeychainManagerConstants.accessType :  selectedAccess as AnyObject,
             KeychainManagerConstants.valueData  :  encryptedPassword as AnyObject,
         ]
         
@@ -159,10 +159,10 @@ extension KeychainManager {
     }
     
     //MARK: Method to store web credentials
-    public func set(server: String, account: String, password: String) {
+    public func set(server: String, account: String, password: String, withAccess: accessibilityType? = nil) {
         
         do {
-            try set(server: server, user: account, password: password)
+            try set(server: server, user: account, password: password, access: withAccess ?? accessibility)
         }catch {
             print(error.localizedDescription)
         }
