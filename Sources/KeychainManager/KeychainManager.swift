@@ -11,10 +11,11 @@ open class KeychainManager {
     
     fileprivate var accessGroup: String = ""
     fileprivate var keyPrefix: String = ""
-    fileprivate var accessibility: accessibilityType = .accessibleWhenUnlocked
     
     /// Bool which specifies if synchronizable data
     open var synchronizable: Bool = false
+    
+    open var accessibility: accessibilityType? = nil
     
     /// Initialiser to use only KeyPrefix
     public init(keyPrefix: String) {
@@ -65,16 +66,12 @@ open class KeychainManager {
 extension KeychainManager {
     
     //MARK: SET DRIVER CODE
-    fileprivate func set(value: Data, service: String, account: String, access: accessibilityType) throws {
-        var accessErrorUnmanaged: Unmanaged<CFError>? = nil
-        
-        let selectedAccess = SecAccessControlCreateWithFlags(kCFAllocatorDefault, access.value(), [], &accessErrorUnmanaged)
-        
+    fileprivate func set(value: Data, service: String, account: String) throws {
+       
         var query: [String: AnyObject] = [
             KeychainManagerConstants.classType  :  kSecClassGenericPassword,
             KeychainManagerConstants.service    :  service as AnyObject,
             KeychainManagerConstants.account    :  (keyPrefix + account) as AnyObject,
-            KeychainManagerConstants.accessType :  selectedAccess as AnyObject,
             KeychainManagerConstants.valueData  :  value as AnyObject,
         ]
         
@@ -82,14 +79,12 @@ extension KeychainManager {
             query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
         }
         
+        query = addAccessibility(queryItems: query, accessType: accessibility)
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         let status = SecItemAdd(query as CFDictionary, nil)
         
-        guard accessErrorUnmanaged != nil else {
-            throw KeychainError.accessError
-        }
-        
+    
         guard status != errSecDuplicateItem else {
             throw KeychainError.duplicateEntry
         }
@@ -100,48 +95,45 @@ extension KeychainManager {
     }
     
     // MARK: Method to save boolean values
-    public func set(value: Bool, service: String, account: String, withAccess: accessibilityType? = nil) {
+    public func set(value: Bool, service: String, account: String) {
         let bytes: [UInt8] = value ? [1] : [0]
         
         do {
-            try set(value:  Data(bytes), service: service, account: account, access: withAccess ?? accessibility)
+            try set(value:  Data(bytes), service: service, account: account)
         }catch {
-            print(error.localizedDescription)
+            print(error)
         }
     }
     
     // MARK: Method to store String directly to keychain
-    public func set(value: String, service: String, account: String, withAccess: accessibilityType? = nil) {
+    public func set(value: String, service: String, account: String) {
         
         do {
-            try set(value: value.data(using: .utf8) ?? Data(), service: service, account: account, access: withAccess ?? accessibility)
+            try set(value: value.data(using: .utf8) ?? Data(), service: service, account: account)
         }catch {
-            print(error.localizedDescription)
+            print(error)
         }
     }
     
     // MARK: Method to save Custom Data Object
-    public func set <T: Codable> (object: T, service: String, account: String, withAccess: accessibilityType? = nil) {
+    public func set <T: Codable> (object: T, service: String, account: String) {
         
         guard let userData = try? JSONEncoder().encode(object) else { return }
         
         do {
-            try? KeychainManager().set(value: userData, service: service, account: account, access: withAccess ?? accessibility)
+            try? KeychainManager().set(value: userData, service: service, account: account)
         }
     }
     
     //MARK: SET WEB CREDENTIALS DRIVER
-    fileprivate func set(server: String, user: String, password: String, access: accessibilityType) throws {
-        var accessErrorUnmanaged: Unmanaged<CFError>? = nil
-        
+    fileprivate func set(server: String, user: String, password: String) throws {
+       
         let encryptedPassword = password.data(using: .utf8)
-        let selectedAccess = SecAccessControlCreateWithFlags(kCFAllocatorDefault, access.value(), [], &accessErrorUnmanaged)
         
         var query: [String : AnyObject] = [
             KeychainManagerConstants.classType  :  kSecClassInternetPassword,
             KeychainManagerConstants.account    :  user as AnyObject,
             KeychainManagerConstants.server     :  server as AnyObject,
-            KeychainManagerConstants.accessType :  selectedAccess as AnyObject,
             KeychainManagerConstants.valueData  :  encryptedPassword as AnyObject,
         ]
         
@@ -149,13 +141,10 @@ extension KeychainManager {
             query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
         }
         
+        query = addAccessibility(queryItems: query, accessType: accessibility)
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         let status = SecItemAdd(query as CFDictionary, nil)
-        
-        guard accessErrorUnmanaged != nil else {
-            throw KeychainError.accessError
-        }
         
         guard status != errSecDuplicateItem else {
             throw KeychainError.duplicateEntry
@@ -167,10 +156,10 @@ extension KeychainManager {
     }
     
     //MARK: Method to store web credentials
-    public func set(server: String, account: String, password: String, withAccess: accessibilityType? = nil) {
+    public func set(server: String, account: String, password: String) {
         
         do {
-            try set(server: server, user: account, password: password, access: withAccess ?? accessibility)
+            try set(server: server, user: account, password: password)
         }catch {
             print(error.localizedDescription)
         }
@@ -480,9 +469,20 @@ extension KeychainManager {
         if isSynchronizable {
             print("sync ✅")
             var result: [String: AnyObject] = queryItems
-           // let state = isSynchronizable ? kCFBooleanTrue as AnyObject : kSecAttrSynchronizableAny as AnyObject
             result[KeychainManagerConstants.synchronizable] = isSynchronizable ? kCFBooleanTrue as AnyObject : kSecAttrSynchronizableAny as AnyObject
-           // result.updateValue(state, forKey: KeychainManagerConstants.synchronizable)
+            return result
+        }
+        
+        return queryItems
+    }
+    
+    /// Method to add accessibility type
+    func addAccessibility(queryItems: [String: AnyObject], accessType: accessibilityType? = nil) -> [String: AnyObject] {
+        print("access ⭐️")
+        if accessType != nil {
+            var result: [String: AnyObject] = queryItems
+            let selectedAccess = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessType!.value(), [], nil)
+            result[KeychainManagerConstants.accessType] = selectedAccess as AnyObject
             return result
         }
         
