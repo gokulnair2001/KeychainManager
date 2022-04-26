@@ -478,6 +478,7 @@ extension KeychainManager {
     func addSyncIfRequired(queryItems: [String: AnyObject], isSynchronizable: Bool) -> [String: AnyObject] {
        
         if isSynchronizable {
+            print("sync ✅")
             var result: [String: AnyObject] = queryItems
             let state = isSynchronizable ? kCFBooleanTrue as AnyObject : kSecAttrSynchronizableAny as AnyObject
             result.updateValue(state, forKey: KeychainManagerConstants.synchronizable)
