@@ -11,7 +11,7 @@ open class KeychainManager {
     
     fileprivate var accessGroup: String = ""
     fileprivate var keyPrefix: String = ""
-    fileprivate var accessibility: accessibilityType = .unlocked
+    fileprivate var accessibility: accessibilityType = .accessibleWhenUnlocked
     
     /// Initialiser to use only KeyPrefix
     public init(keyPrefix: String) {

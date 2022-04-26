@@ -8,25 +8,25 @@
 import Foundation
 
 public enum accessibilityType {
-    case passcodeSet
-    case unlocked
-    case unlockedTDO
-    case firstUnlock
-    case firstUnlockTDO
+    case accessibleWhenPasscodeSet
+    case accessibleWhenUnlocked
+    case accessibleWhenUnlockedTDO
+    case accessibleOnFirstUnlock
+    case accessibleOnFirstUnlockTDO
     
     //MARK: - Method to return Enum value
     
      func value() -> CFString {
         switch self {
-        case .passcodeSet:
+        case .accessibleWhenPasscodeSet:
             return kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly
-        case .unlocked:
+        case .accessibleWhenUnlocked:
             return kSecAttrAccessibleWhenUnlocked
-        case .unlockedTDO:
+        case .accessibleWhenUnlockedTDO:
             return kSecAttrAccessibleWhenUnlockedThisDeviceOnly
-        case .firstUnlock:
+        case .accessibleOnFirstUnlock:
             return kSecAttrAccessibleAfterFirstUnlock
-        case .firstUnlockTDO:
+        case .accessibleOnFirstUnlockTDO:
             return kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
         }
     }
