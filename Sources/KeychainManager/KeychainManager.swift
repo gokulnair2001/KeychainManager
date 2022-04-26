@@ -27,34 +27,10 @@ open class KeychainManager {
         self.accessGroup = accessGroup
     }
     
-    /// Initialiser to use only accessibility type
-    public init(accessibility: accessibilityType) {
-        self.accessibility = accessibility
-    }
-    
     /// Initialiser to use KeyPrefix and Access Group
     public init (accessGroup: String, keyPrefix: String) {
         self.accessGroup = accessGroup
         self.keyPrefix = keyPrefix
-    }
-   
-    /// Initialiser to use keyPrefix & accessibility
-    public init(keyPrefix: String, accessibility: accessibilityType) {
-        self.keyPrefix = keyPrefix
-        self.accessibility = accessibility
-    }
-    
-    /// Initialiser to use Access group & accessibility
-    public init(accessGroup: String, accessibility: accessibilityType) {
-        self.accessGroup = accessGroup
-        self.accessibility = accessibility
-    }
-    
-    /// Initialiser to use Access group, keyPrefix & accessibility
-    public init(accessGroup: String, keyPrefix: String, accessibility: accessibilityType) {
-        self.accessGroup = accessGroup
-        self.keyPrefix = keyPrefix
-        self.accessibility = accessibility
     }
     
     /// Empty Initialiser to use generic keyChain
