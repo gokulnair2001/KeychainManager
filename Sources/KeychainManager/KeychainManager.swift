@@ -13,6 +13,9 @@ open class KeychainManager {
     fileprivate var keyPrefix: String = ""
     fileprivate var accessibility: accessibilityType = .accessibleWhenUnlocked
     
+    /// Bool which specifies if synchronizable data
+    open var synchronizable: Bool = false
+    
     /// Initialiser to use only KeyPrefix
     public init(keyPrefix: String) {
         self.keyPrefix = keyPrefix
@@ -55,6 +58,7 @@ open class KeychainManager {
     
     /// Empty Initialiser to use generic keyChain
     public init() {}
+
 }
 
 //MARK: - SET
@@ -77,6 +81,8 @@ extension KeychainManager {
         if isAccessSharing() {
             query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
         }
+        
+        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         let status = SecItemAdd(query as CFDictionary, nil)
         
@@ -142,6 +148,8 @@ extension KeychainManager {
         if isAccessSharing() {
             query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
         }
+        
+        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         let status = SecItemAdd(query as CFDictionary, nil)
         
@@ -244,6 +252,8 @@ extension KeychainManager {
             query.updateValue(kCFBooleanTrue, forKey: KeychainManagerConstants.returnAttributes)
         }
         
+        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
+        
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
         
@@ -279,6 +289,8 @@ extension KeychainManager {
             query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
             query.updateValue(kCFBooleanTrue, forKey: KeychainManagerConstants.returnAttributes)
         }
+        
+        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         var result: AnyObject?
         
@@ -320,6 +332,8 @@ extension KeychainManager {
         if isAccessSharing() {
             query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
         }
+        
+        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         let status = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
         
@@ -380,6 +394,8 @@ extension KeychainManager {
             query.updateValue(kCFBooleanTrue, forKey: KeychainManagerConstants.returnAttributes)
         }
         
+        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
+        
         let status = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
         
         guard status != errSecItemNotFound else { throw KeychainError.noPassword }
@@ -416,6 +432,8 @@ extension KeychainManager {
             query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
         }
         
+        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
+        
         let status = SecItemDelete(query as CFDictionary)
         guard status == errSecSuccess || status == errSecItemNotFound else {
             throw KeychainError.unknown(status) }
@@ -445,6 +463,8 @@ extension KeychainManager {
             query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
         }
         
+        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
+        
         let status = SecItemDelete(query as CFDictionary)
         guard status == errSecSuccess || status == errSecItemNotFound else {
             throw KeychainError.unknown(status) }
@@ -453,6 +473,19 @@ extension KeychainManager {
 
 //MARK: - Tools
 extension KeychainManager {
+    
+    /// Method to enable iCloud Sync
+    func addSyncIfRequired(queryItems: [String: AnyObject], isSynchronizable: Bool) -> [String: AnyObject] {
+       
+        if isSynchronizable {
+            var result: [String: AnyObject] = queryItems
+            let state = isSynchronizable ? kCFBooleanTrue as AnyObject : kSecAttrSynchronizableAny as AnyObject
+            result.updateValue(state, forKey: KeychainManagerConstants.synchronizable)
+            return result
+        }
+        
+        return queryItems
+    }
     
     /// To check is access sharing allowed or not
     private func isAccessSharing() -> Bool {
