@@ -198,6 +198,7 @@ extension KeychainManager {
     }
     
     //MARK: Method to fetch bool values
+    @discardableResult
     public func getBool(service: String, account: String) -> Bool{
         guard let data = get(service: service, account: account) else {return false}
         guard let firstBit = data.first else {return false}
@@ -206,6 +207,7 @@ extension KeychainManager {
     }
     
     //MARK: Method to get custom object type
+    @discardableResult
     public func get<T: Codable> (object: T, service: String, account: String) -> T? {
         
         guard let userData = KeychainManager().get(service: service, account: account) else {return nil}
@@ -216,6 +218,7 @@ extension KeychainManager {
     }
     
     //MARK: Method to get String value
+    @discardableResult
     public func get(service: String, account: String) -> String {
         
         let rawData: Data? = get(service: service, account: account)
@@ -250,6 +253,7 @@ extension KeychainManager {
     }
     
     //MARK: Method to get Web Credential value
+    @discardableResult
     public func get(server: String, account: String) -> String {
         
         let rawData: Data? = get(server: server, account: account)
@@ -260,6 +264,7 @@ extension KeychainManager {
     }
     
     //MARK: - GET ALL VALUES
+    @discardableResult
     public func getAllValues(secClass: secureClassType) -> [String:String] {
         
         var query: [String: AnyObject] = [
