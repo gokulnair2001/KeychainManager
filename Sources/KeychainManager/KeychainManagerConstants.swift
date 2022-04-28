@@ -31,6 +31,8 @@ public struct KeychainManagerConstants {
     
     static var accessType: String {return toString(kSecAttrAccessControl)}
     
+    static var synchronizable: String {return toString(kSecAttrSynchronizable)}
+    
     //MARK: - Keychain Type
     
     static var internetPassword: String {return toString(kSecClassInternetPassword)}

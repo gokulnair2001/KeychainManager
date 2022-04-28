@@ -9,81 +9,53 @@ import Foundation
 
 open class KeychainManager {
     
-    fileprivate var accessGroup: String = ""
     fileprivate var keyPrefix: String = ""
-    fileprivate var accessibility: accessibilityType = .accessibleWhenUnlocked
+    
+    /// Bool which specifies if synchronizable data
+    open var synchronizable: Bool = false
+    
+    open var accessibility: accessibilityType? = nil
     
     /// Initialiser to use only KeyPrefix
     public init(keyPrefix: String) {
         self.keyPrefix = keyPrefix
     }
     
-    /// Initialiser to use only Access Group
-    public init (accessGroup: String) {
-        self.accessGroup = accessGroup
+    /// Initialiser to set  synchronizable
+    public init(synchronizable: Bool) {
+        self.synchronizable = synchronizable
     }
     
-    /// Initialiser to use only accessibility type
-    public init(accessibility: accessibilityType) {
-        self.accessibility = accessibility
-    }
-    
-    /// Initialiser to use KeyPrefix and Access Group
-    public init (accessGroup: String, keyPrefix: String) {
-        self.accessGroup = accessGroup
+    /// Initialiser to set keyPrefix and synchronizable
+    public init(keyPrefix: String, synchronizable: Bool) {
         self.keyPrefix = keyPrefix
-    }
-   
-    /// Initialiser to use keyPrefix & accessibility
-    public init(keyPrefix: String, accessibility: accessibilityType) {
-        self.keyPrefix = keyPrefix
-        self.accessibility = accessibility
-    }
-    
-    /// Initialiser to use Access group & accessibility
-    public init(accessGroup: String, accessibility: accessibilityType) {
-        self.accessGroup = accessGroup
-        self.accessibility = accessibility
-    }
-    
-    /// Initialiser to use Access group, keyPrefix & accessibility
-    public init(accessGroup: String, keyPrefix: String, accessibility: accessibilityType) {
-        self.accessGroup = accessGroup
-        self.keyPrefix = keyPrefix
-        self.accessibility = accessibility
+        self.synchronizable = synchronizable
     }
     
     /// Empty Initialiser to use generic keyChain
     public init() {}
+
 }
 
 //MARK: - SET
 extension KeychainManager {
     
     //MARK: SET DRIVER CODE
-    fileprivate func set(value: Data, service: String, account: String, access: accessibilityType) throws {
-        var accessErrorUnmanaged: Unmanaged<CFError>? = nil
-        
-        let selectedAccess = SecAccessControlCreateWithFlags(kCFAllocatorDefault, access.value(), [], &accessErrorUnmanaged)
-        
+    fileprivate func set(value: Data, service: String, account: String) throws {
+       
         var query: [String: AnyObject] = [
             KeychainManagerConstants.classType  :  kSecClassGenericPassword,
             KeychainManagerConstants.service    :  service as AnyObject,
             KeychainManagerConstants.account    :  (keyPrefix + account) as AnyObject,
-            KeychainManagerConstants.accessType :  selectedAccess as AnyObject,
             KeychainManagerConstants.valueData  :  value as AnyObject,
         ]
         
-        if isAccessSharing() {
-            query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
-        }
+        query = addAccessibility(queryItems: query, accessType: accessibility)
+        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         let status = SecItemAdd(query as CFDictionary, nil)
         
-        guard accessErrorUnmanaged != nil else {
-            throw KeychainError.accessError
-        }
-        
+    
         guard status != errSecDuplicateItem else {
             throw KeychainError.duplicateEntry
         }
@@ -94,60 +66,52 @@ extension KeychainManager {
     }
     
     // MARK: Method to save boolean values
-    public func set(value: Bool, service: String, account: String, withAccess: accessibilityType? = nil) {
+    public func set(value: Bool, service: String, account: String) {
         let bytes: [UInt8] = value ? [1] : [0]
         
         do {
-            try set(value:  Data(bytes), service: service, account: account, access: withAccess ?? accessibility)
+            try set(value:  Data(bytes), service: service, account: account)
         }catch {
-            print(error.localizedDescription)
+            print(error)
         }
     }
     
     // MARK: Method to store String directly to keychain
-    public func set(value: String, service: String, account: String, withAccess: accessibilityType? = nil) {
+    public func set(value: String, service: String, account: String) {
         
         do {
-            try set(value: value.data(using: .utf8) ?? Data(), service: service, account: account, access: withAccess ?? accessibility)
+            try set(value: value.data(using: .utf8) ?? Data(), service: service, account: account)
         }catch {
-            print(error.localizedDescription)
+            print(error)
         }
     }
     
     // MARK: Method to save Custom Data Object
-    public func set <T: Codable> (object: T, service: String, account: String, withAccess: accessibilityType? = nil) {
+    public func set <T: Codable> (object: T, service: String, account: String) {
         
         guard let userData = try? JSONEncoder().encode(object) else { return }
         
         do {
-            try? KeychainManager().set(value: userData, service: service, account: account, access: withAccess ?? accessibility)
+            try? KeychainManager().set(value: userData, service: service, account: account)
         }
     }
     
     //MARK: SET WEB CREDENTIALS DRIVER
-    fileprivate func set(server: String, user: String, password: String, access: accessibilityType) throws {
-        var accessErrorUnmanaged: Unmanaged<CFError>? = nil
-        
+    fileprivate func set(server: String, user: String, password: String) throws {
+       
         let encryptedPassword = password.data(using: .utf8)
-        let selectedAccess = SecAccessControlCreateWithFlags(kCFAllocatorDefault, access.value(), [], &accessErrorUnmanaged)
         
         var query: [String : AnyObject] = [
             KeychainManagerConstants.classType  :  kSecClassInternetPassword,
             KeychainManagerConstants.account    :  user as AnyObject,
             KeychainManagerConstants.server     :  server as AnyObject,
-            KeychainManagerConstants.accessType :  selectedAccess as AnyObject,
             KeychainManagerConstants.valueData  :  encryptedPassword as AnyObject,
         ]
         
-        if isAccessSharing() {
-            query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
-        }
+        query = addAccessibility(queryItems: query, accessType: accessibility)
+        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         let status = SecItemAdd(query as CFDictionary, nil)
-        
-        guard accessErrorUnmanaged != nil else {
-            throw KeychainError.accessError
-        }
         
         guard status != errSecDuplicateItem else {
             throw KeychainError.duplicateEntry
@@ -159,10 +123,10 @@ extension KeychainManager {
     }
     
     //MARK: Method to store web credentials
-    public func set(server: String, account: String, password: String, withAccess: accessibilityType? = nil) {
+    public func set(server: String, account: String, password: String) {
         
         do {
-            try set(server: server, user: account, password: password, access: withAccess ?? accessibility)
+            try set(server: server, user: account, password: password)
         }catch {
             print(error.localizedDescription)
         }
@@ -184,10 +148,7 @@ extension KeychainManager {
             KeychainManagerConstants.matchLimit  :  kSecMatchLimitOne,
         ]
         
-        if isAccessSharing() {
-            query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
-            query.updateValue(kCFBooleanTrue, forKey: KeychainManagerConstants.returnAttributes)
-        }
+        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
@@ -239,10 +200,7 @@ extension KeychainManager {
             KeychainManagerConstants.matchLimit  :  kSecMatchLimitOne,
         ]
         
-        if isAccessSharing() {
-            query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
-            query.updateValue(kCFBooleanTrue, forKey: KeychainManagerConstants.returnAttributes)
-        }
+        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
@@ -275,10 +233,7 @@ extension KeychainManager {
             KeychainManagerConstants.matchLimit as String       :  kSecMatchLimitAll
         ]
         
-        if isAccessSharing() {
-            query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
-            query.updateValue(kCFBooleanTrue, forKey: KeychainManagerConstants.returnAttributes)
-        }
+        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         var result: AnyObject?
         
@@ -317,9 +272,7 @@ extension KeychainManager {
             kSecClass as String: kSecClassGenericPassword,
         ]
         
-        if isAccessSharing() {
-            query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
-        }
+        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         let status = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
         
@@ -375,10 +328,7 @@ extension KeychainManager {
             KeychainManagerConstants.classType : kSecClassInternetPassword,
         ]
         
-        if isAccessSharing() {
-            query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
-            query.updateValue(kCFBooleanTrue, forKey: KeychainManagerConstants.returnAttributes)
-        }
+        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         let status = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
         
@@ -412,9 +362,7 @@ extension KeychainManager {
             KeychainManagerConstants.account    :  (keyPrefix + account) as AnyObject,
         ]
         
-        if isAccessSharing() {
-            query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
-        }
+        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         let status = SecItemDelete(query as CFDictionary)
         guard status == errSecSuccess || status == errSecItemNotFound else {
@@ -441,9 +389,7 @@ extension KeychainManager {
             KeychainManagerConstants.account    :  account as AnyObject,
         ]
         
-        if isAccessSharing() {
-            query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
-        }
+        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         let status = SecItemDelete(query as CFDictionary)
         guard status == errSecSuccess || status == errSecItemNotFound else {
@@ -454,12 +400,29 @@ extension KeychainManager {
 //MARK: - Tools
 extension KeychainManager {
     
-    /// To check is access sharing allowed or not
-    private func isAccessSharing() -> Bool {
-        if accessGroup.isEmpty {
-            return false
-        }else {
-            return true
+    /// Method to enable iCloud Sync
+    func addSyncIfRequired(queryItems: [String: AnyObject], isSynchronizable: Bool) -> [String: AnyObject] {
+       
+        if isSynchronizable {
+            print("sync ✅")
+            var result: [String: AnyObject] = queryItems
+            result[KeychainManagerConstants.synchronizable] = isSynchronizable ? kCFBooleanTrue as AnyObject : kSecAttrSynchronizableAny as AnyObject
+            return result
         }
+        
+        return queryItems
+    }
+    
+    /// Method to add accessibility type
+    func addAccessibility(queryItems: [String: AnyObject], accessType: accessibilityType? = nil) -> [String: AnyObject] {
+        print("access ⭐️")
+        if accessType != nil {
+            var result: [String: AnyObject] = queryItems
+            let selectedAccess = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessType!.value(), [], nil)
+            result[KeychainManagerConstants.accessType] = selectedAccess as AnyObject
+            return result
+        }
+        
+        return queryItems
     }
 }
