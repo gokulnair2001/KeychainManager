@@ -217,7 +217,7 @@ extension KeychainManager {
             query.updateValue(kCFBooleanTrue, forKey: KeychainManagerConstants.returnAttributes)
         }
         
-        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
+       // query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
