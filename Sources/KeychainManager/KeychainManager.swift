@@ -9,7 +9,6 @@ import Foundation
 
 open class KeychainManager {
     
-    fileprivate var accessGroup: String = ""
     fileprivate var keyPrefix: String = ""
     
     /// Bool which specifies if synchronizable data
@@ -22,15 +21,15 @@ open class KeychainManager {
         self.keyPrefix = keyPrefix
     }
     
-    /// Initialiser to use only Access Group
-    public init (accessGroup: String) {
-        self.accessGroup = accessGroup
+    /// Initialiser to set  synchronizable
+    public init(synchronizable: Bool) {
+        self.synchronizable = synchronizable
     }
     
-    /// Initialiser to use KeyPrefix and Access Group
-    public init (accessGroup: String, keyPrefix: String) {
-        self.accessGroup = accessGroup
+    /// Initialiser to set keyPrefix and synchronizable
+    public init(keyPrefix: String, synchronizable: Bool) {
         self.keyPrefix = keyPrefix
+        self.synchronizable = synchronizable
     }
     
     /// Empty Initialiser to use generic keyChain
@@ -50,10 +49,6 @@ extension KeychainManager {
             KeychainManagerConstants.account    :  (keyPrefix + account) as AnyObject,
             KeychainManagerConstants.valueData  :  value as AnyObject,
         ]
-        
-        if isAccessSharing() {
-            query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
-        }
         
         query = addAccessibility(queryItems: query, accessType: accessibility)
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
@@ -113,10 +108,6 @@ extension KeychainManager {
             KeychainManagerConstants.valueData  :  encryptedPassword as AnyObject,
         ]
         
-        if isAccessSharing() {
-            query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
-        }
-        
         query = addAccessibility(queryItems: query, accessType: accessibility)
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
@@ -156,11 +147,6 @@ extension KeychainManager {
             KeychainManagerConstants.returnData  :  kCFBooleanTrue,
             KeychainManagerConstants.matchLimit  :  kSecMatchLimitOne,
         ]
-        
-        if isAccessSharing() {
-            query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
-            query.updateValue(kCFBooleanTrue, forKey: KeychainManagerConstants.returnAttributes)
-        }
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
@@ -214,11 +200,6 @@ extension KeychainManager {
             KeychainManagerConstants.matchLimit  :  kSecMatchLimitOne,
         ]
         
-        if isAccessSharing() {
-            query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
-            query.updateValue(kCFBooleanTrue, forKey: KeychainManagerConstants.returnAttributes)
-        }
-        
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         var result: AnyObject?
@@ -251,11 +232,6 @@ extension KeychainManager {
             KeychainManagerConstants.returnReference as String  :  kCFBooleanTrue,
             KeychainManagerConstants.matchLimit as String       :  kSecMatchLimitAll
         ]
-        
-        if isAccessSharing() {
-            query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
-            query.updateValue(kCFBooleanTrue, forKey: KeychainManagerConstants.returnAttributes)
-        }
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
@@ -295,10 +271,6 @@ extension KeychainManager {
         var query: [String: AnyObject] = [
             kSecClass as String: kSecClassGenericPassword,
         ]
-        
-        if isAccessSharing() {
-            query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
-        }
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
@@ -356,11 +328,6 @@ extension KeychainManager {
             KeychainManagerConstants.classType : kSecClassInternetPassword,
         ]
         
-        if isAccessSharing() {
-            query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
-            query.updateValue(kCFBooleanTrue, forKey: KeychainManagerConstants.returnAttributes)
-        }
-        
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         let status = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
@@ -395,10 +362,6 @@ extension KeychainManager {
             KeychainManagerConstants.account    :  (keyPrefix + account) as AnyObject,
         ]
         
-        if isAccessSharing() {
-            query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
-        }
-        
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         let status = SecItemDelete(query as CFDictionary)
@@ -425,10 +388,6 @@ extension KeychainManager {
             KeychainManagerConstants.server     :  server as AnyObject,
             KeychainManagerConstants.account    :  account as AnyObject,
         ]
-        
-        if isAccessSharing() {
-            query.updateValue(accessGroup as AnyObject, forKey: KeychainManagerConstants.accessGroup)
-        }
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
@@ -465,14 +424,5 @@ extension KeychainManager {
         }
         
         return queryItems
-    }
-    
-    /// To check is access sharing allowed or not
-    private func isAccessSharing() -> Bool {
-        if accessGroup.isEmpty {
-            return false
-        }else {
-            return true
-        }
     }
 }
