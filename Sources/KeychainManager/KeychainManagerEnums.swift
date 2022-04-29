@@ -7,6 +7,8 @@
 
 import Foundation
 
+//MARK: - Access Type Enum
+
 public enum accessibilityType {
     case accessibleWhenPasscodeSet
     case accessibleWhenUnlocked
@@ -28,6 +30,31 @@ public enum accessibilityType {
             return kSecAttrAccessibleAfterFirstUnlock
         case .accessibleOnFirstUnlockTDO:
             return kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+        }
+    }
+}
+
+//MARK: - Keychain Error Type Enum
+
+enum KeychainError: Error {
+    case duplicateEntry
+    case unknown(OSStatus)
+    case noPassword
+}
+
+//MARK: - Keychain Security Class Type Enum
+
+public enum secureClassType {
+    
+    case webCredentials
+    case genericPassword
+
+    func value() -> String {
+        switch self {
+        case .webCredentials:
+            return KMConstants.internetPassword
+        case .genericPassword:
+            return KMConstants.genericPassword
         }
     }
 }

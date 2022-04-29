@@ -7,41 +7,41 @@
 
 import Foundation
 
-public struct KeychainManagerConstants {
+public struct KMConstants {
     
-    static var classType: String {return toString(kSecClass)}
+    static var classType: String {return castToString(kSecClass)}
     
-    static var service: String {return toString(kSecAttrService)}
+    static var service: String {return castToString(kSecAttrService)}
     
-    static var account: String {return toString(kSecAttrAccount)}
+    static var account: String {return castToString(kSecAttrAccount)}
     
-    static var valueData: String {return toString(kSecValueData)}
+    static var valueData: String {return castToString(kSecValueData)}
     
-    static var returnData: String {return toString(kSecReturnData)}
+    static var returnData: String {return castToString(kSecReturnData)}
   
-    static var returnReference: String {return toString(kSecReturnRef)}
+    static var returnReference: String {return castToString(kSecReturnRef)}
     
-    static var returnAttributes: String {return toString(kSecReturnAttributes)}
+    static var returnAttributes: String {return castToString(kSecReturnAttributes)}
     
-    static var matchLimit: String {return toString(kSecMatchLimit)}
+    static var matchLimit: String {return castToString(kSecMatchLimit)}
     
-    static var accessGroup: String {return toString(kSecAttrAccessGroup)}
+    static var accessGroup: String {return castToString(kSecAttrAccessGroup)}
     
-    static var server: String {return toString(kSecAttrServer)}
+    static var server: String {return castToString(kSecAttrServer)}
     
-    static var accessType: String {return toString(kSecAttrAccessControl)}
+    static var accessType: String {return castToString(kSecAttrAccessControl)}
     
-    static var synchronizable: String {return toString(kSecAttrSynchronizable)}
+    static var synchronizable: String {return castToString(kSecAttrSynchronizable)}
     
     //MARK: - Keychain Type
     
-    static var internetPassword: String {return toString(kSecClassInternetPassword)}
+    static var internetPassword: String {return castToString(kSecClassInternetPassword)}
     
-    static var genericPassword: String {return toString(kSecClassGenericPassword)}
+    static var genericPassword: String {return castToString(kSecClassGenericPassword)}
     
-    //MARK: - Method to return string type
+    //MARK: - Method to cast string type
     
-    static func toString(_ value: CFString) -> String {
+    static func castToString(_ value: CFString) -> String {
         return value as String
     }
 }
