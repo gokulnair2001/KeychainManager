@@ -185,6 +185,11 @@ extension KeychainManager {
     
     //MARK: Method to fetch bool values
     @discardableResult
+    /// Function to GET/FETCH keychain values as stored as Bool
+    /// - Parameters:
+    ///   - service: String to specify the service associated with this item
+    ///   - account: Account name of keychain holder
+    /// - Returns: Returns the Bool value stored
     public func getBool(service: String, account: String) -> Bool{
         guard let data = get(service: service, account: account) else {return false}
         guard let firstBit = data.first else {return false}
@@ -194,6 +199,12 @@ extension KeychainManager {
     
     //MARK: Method to get custom object type
     @discardableResult
+    /// Function to GET/FETCH keychain values as stored as Custom Object
+    /// - Parameters:
+    ///   - object: Custom Codable object to save
+    ///   - service: String to specify the service associated with this item
+    ///   - account: Account name of keychain holder
+    /// - Returns: Returns the codable object stored
     public func get<T: Codable> (object: T, service: String, account: String) -> T? {
         
         guard let userData = KeychainManager().get(service: service, account: account) else {return nil}
@@ -205,6 +216,11 @@ extension KeychainManager {
     
     //MARK: Method to get String value
     @discardableResult
+    /// Function to GET/FETCH keychain values as stored as String
+    /// - Parameters:
+    ///   - service: String to specify the service associated with this item
+    ///   - account: Account name of keychain holder
+    /// - Returns: Returns the String value stored
     public func get(service: String, account: String) -> String {
         
         let rawData: Data? = get(service: service, account: account)
@@ -237,6 +253,11 @@ extension KeychainManager {
     
     //MARK: Method to get Web Credential value
     @discardableResult
+    /// Function to GET/FETCH internet password stored
+    /// - Parameters:
+    ///   - server: Contains the server's domain name or IP address
+    ///   - account: Account name of keychain holder
+    /// - Returns: Returns the password stored
     public func get(server: String, account: String) -> String {
         
         let rawData: Data? = get(server: server, account: account)
@@ -248,6 +269,9 @@ extension KeychainManager {
     
     //MARK: - GET ALL VALUES
     @discardableResult
+    /// Function to GET/FETCH all the values stored in keychain
+    /// - Parameter secClass: Specifies the keychain security class to fetch
+    /// - Returns: Returns all the values stored
     public func getAllValues(secClass: secureClassType) -> [String:String] {
         
         var query: [String: AnyObject] = [
