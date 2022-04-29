@@ -9,24 +9,29 @@ import Foundation
 
 open class KeychainManager {
     
+    /// KeyPrefix: Prefix used to append to the account id.
+    /// Such Prefix are best used when performing tests. Eg: test_account1_
     fileprivate var keyPrefix: String = ""
     
-    /// Bool which specifies if synchronizable data
+    /// Synchronizable: Bool which specifies if synchronizable data.
+    /// When enabled all the keychains will be saved on the users iCloud account.
     open var synchronizable: Bool = false
     
+    /// Accessibility: Used to define the Keychain accessibility.
+    /// The abstract consists of various types, select the most restrictive option to safe guard the data
     open var accessibility: accessibilityType? = nil
     
-    /// Initialiser to use only KeyPrefix
+    /// Initialiser to pre set KeyPrefix
     public init(keyPrefix: String) {
         self.keyPrefix = keyPrefix
     }
     
-    /// Initialiser to set  synchronizable
+    /// Initialiser to pre set  iCloud sync state of Keychain
     public init(synchronizable: Bool) {
         self.synchronizable = synchronizable
     }
     
-    /// Initialiser to set keyPrefix and synchronizable
+    /// Initialiser to pre set keyPrefix and sync state of Keychain
     public init(keyPrefix: String, synchronizable: Bool) {
         self.keyPrefix = keyPrefix
         self.synchronizable = synchronizable
@@ -66,6 +71,11 @@ extension KeychainManager {
     }
     
     // MARK: Method to save boolean values
+    /// Function to SET/SAVE keychain values as Bool
+    /// - Parameters:
+    ///   - value: Bool value to save
+    ///   - service: String to specify the service associated with this item
+    ///   - account: Account name of keychain holder
     public func set(value: Bool, service: String, account: String) {
         let bytes: [UInt8] = value ? [1] : [0]
         
@@ -77,6 +87,11 @@ extension KeychainManager {
     }
     
     // MARK: Method to store String directly to keychain
+    /// Function to SET/SAVE keychain values as String
+    /// - Parameters:
+    ///   - value: String value to save
+    ///   - service: String to specify the service associated with this item
+    ///   - account: Account name of keychain holder
     public func set(value: String, service: String, account: String) {
         
         do {
@@ -87,6 +102,11 @@ extension KeychainManager {
     }
     
     // MARK: Method to save Custom Data Object
+    /// Function to SET/SAVE keychain values as Custom Objects
+    /// - Parameters:
+    ///   - object: Custom Codable object to save
+    ///   - service: String to specify the service associated with this item
+    ///   - account: Account name of keychain holder
     public func set <T: Codable> (object: T, service: String, account: String) {
         
         guard let userData = try? JSONEncoder().encode(object) else { return }
@@ -123,6 +143,11 @@ extension KeychainManager {
     }
     
     //MARK: Method to store web credentials
+    /// Function to SET/SAVE Internet passwords on keychain
+    /// - Parameters:
+    ///   - server: Contains the server's domain name or IP address
+    ///   - account: Account name of keychain holder
+    ///   - password: Password to save in keychain
     public func set(server: String, account: String, password: String) {
         
         do {
@@ -160,6 +185,11 @@ extension KeychainManager {
     
     //MARK: Method to fetch bool values
     @discardableResult
+    /// Function to GET/FETCH keychain values as stored as Bool
+    /// - Parameters:
+    ///   - service: String to specify the service associated with this item
+    ///   - account: Account name of keychain holder
+    /// - Returns: Returns the Bool value stored
     public func getBool(service: String, account: String) -> Bool{
         guard let data = get(service: service, account: account) else {return false}
         guard let firstBit = data.first else {return false}
@@ -169,6 +199,12 @@ extension KeychainManager {
     
     //MARK: Method to get custom object type
     @discardableResult
+    /// Function to GET/FETCH keychain values as stored as Custom Object
+    /// - Parameters:
+    ///   - object: Custom Codable object to save
+    ///   - service: String to specify the service associated with this item
+    ///   - account: Account name of keychain holder
+    /// - Returns: Returns the codable object stored
     public func get<T: Codable> (object: T, service: String, account: String) -> T? {
         
         guard let userData = KeychainManager().get(service: service, account: account) else {return nil}
@@ -180,6 +216,11 @@ extension KeychainManager {
     
     //MARK: Method to get String value
     @discardableResult
+    /// Function to GET/FETCH keychain values as stored as String
+    /// - Parameters:
+    ///   - service: String to specify the service associated with this item
+    ///   - account: Account name of keychain holder
+    /// - Returns: Returns the String value stored
     public func get(service: String, account: String) -> String {
         
         let rawData: Data? = get(service: service, account: account)
@@ -212,6 +253,11 @@ extension KeychainManager {
     
     //MARK: Method to get Web Credential value
     @discardableResult
+    /// Function to GET/FETCH internet password stored
+    /// - Parameters:
+    ///   - server: Contains the server's domain name or IP address
+    ///   - account: Account name of keychain holder
+    /// - Returns: Returns the password stored
     public func get(server: String, account: String) -> String {
         
         let rawData: Data? = get(server: server, account: account)
@@ -223,6 +269,9 @@ extension KeychainManager {
     
     //MARK: - GET ALL VALUES
     @discardableResult
+    /// Function to GET/FETCH all the values stored in keychain
+    /// - Parameter secClass: Specifies the keychain security class to fetch
+    /// - Returns: Returns all the values stored
     public func getAllValues(secClass: secureClassType) -> [String:String] {
         
         var query: [String: AnyObject] = [
@@ -282,6 +331,10 @@ extension KeychainManager {
     }
     
     //MARK: Update Bool Values
+    /// Function to UPDATE any bool value stored in Keychain
+    /// - Parameters:
+    ///   - value: specifies the new bool value to be updated
+    ///   - account: Account name of keychain holder
     public func update(value: Bool, account: String) {
         let bytes: [UInt8] = value ? [1] : [0]
         
@@ -293,6 +346,10 @@ extension KeychainManager {
     }
     
     //MARK: Update String Value
+    /// Function to UPDATE any string value stored in Keychain
+    /// - Parameters:
+    ///   - value: specifies the new string value to be updated
+    ///   - account: Account name of keychain holder
     public func update(value: String, account: String) {
         do {
             print("⚠️ Val: \(value.data(using: .utf8) ?? Data()) | Acc: \(account)")
@@ -303,6 +360,10 @@ extension KeychainManager {
     }
     
     //MARK: Update Custom Objects
+    /// Function to UPDATE any  codable object stored in Keychain
+    /// - Parameters:
+    ///   - object: specifies the new object to be updated
+    ///   - account: Account name of keychain holder
     public func update<T: Codable> (object: T, account: String) {
         
         guard let userData = try? JSONEncoder().encode(object) else { return }
@@ -338,9 +399,13 @@ extension KeychainManager {
     }
     
     //MARK: Update Web Credentials
-    public func update(account: String, newPassword: String) {
+    /// Function to UPDATE any password stored in Keychain
+    /// - Parameters:
+    ///   - account: Account name of keychain holder
+    ///   - password:  specifies the new password to be updated
+    public func update(account: String, password: String) {
         do {
-            let encryptedPassword = newPassword.data(using: .utf8) ?? Data()
+            let encryptedPassword = password.data(using: .utf8) ?? Data()
             print(encryptedPassword)
             try update(account: account, password: encryptedPassword)
             
@@ -354,6 +419,10 @@ extension KeychainManager {
 extension KeychainManager {
     
     //MARK: DELETE SELECTED ITEM
+    /// Function to DELETE/REMOVE a keychain value
+    /// - Parameters:
+    ///   - service: String to specify the service associated with this item
+    ///   - account: Account name of keychain holder
     public func delete(service: String, account: String) throws {
         
         var query: [String: AnyObject] = [
@@ -370,6 +439,7 @@ extension KeychainManager {
     }
     
     //MARK: DELETE ALL ITEMS
+    /// Clears all the values stored in the keychain
     public func clearKeyChain() throws {
         let query: [String: AnyObject] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -380,7 +450,11 @@ extension KeychainManager {
             throw KeychainError.unknown(status) }
     }
     
-    //MARK: - DLETE WEB CREDENTIALS
+    //MARK: DLETE WEB CREDENTIALS
+    /// FFunction to DELETE/REMOVE passwords saved on Keychain
+    /// - Parameters:
+    ///   - server: Contains the server's domain name or IP address
+    ///   - account: Account name of keychain holder
     public func delete(server: String, account: String) throws {
         
         var query: [String: AnyObject] = [
