@@ -61,8 +61,8 @@ extension KeychainManager {
             KMConstants.valueData  :  value as AnyObject,
         ]
         
-        query = addAccessibility(queryItems: query, accessType: accessibility)
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
+        query = addAccessibility(queryItems: query, accessType: accessibility)
         
         let status = SecItemAdd(query as CFDictionary, nil)
         
@@ -134,8 +134,8 @@ extension KeychainManager {
             KMConstants.valueData  :  encryptedPassword as AnyObject,
         ]
         
-        query = addAccessibility(queryItems: query, accessType: accessibility)
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
+        query = addAccessibility(queryItems: query, accessType: accessibility)
         
         let status = SecItemAdd(query as CFDictionary, nil)
         
@@ -412,7 +412,6 @@ extension KeychainManager {
     public func update(account: String, password: String) {
         do {
             let encryptedPassword = password.data(using: .utf8) ?? Data()
-            print(encryptedPassword)
             try update(account: account, password: encryptedPassword)
             
         }catch {
@@ -484,7 +483,7 @@ extension KeychainManager {
     func addSyncIfRequired(queryItems: [String: AnyObject], isSynchronizable: Bool) -> [String: AnyObject] {
        
         if isSynchronizable {
-            print("sync ✅")
+            print("sync ✅\(accessGroup)")
             var result: [String: AnyObject] = queryItems
             result[KMConstants.accessGroup] = accessGroup as AnyObject
             result[KMConstants.synchronizable] = isSynchronizable ? kCFBooleanTrue as AnyObject : kSecAttrSynchronizableAny as AnyObject
