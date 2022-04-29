@@ -419,6 +419,10 @@ extension KeychainManager {
 extension KeychainManager {
     
     //MARK: DELETE SELECTED ITEM
+    /// Function to DELETE/REMOVE a keychain value
+    /// - Parameters:
+    ///   - service: String to specify the service associated with this item
+    ///   - account: Account name of keychain holder
     public func delete(service: String, account: String) throws {
         
         var query: [String: AnyObject] = [
@@ -435,6 +439,7 @@ extension KeychainManager {
     }
     
     //MARK: DELETE ALL ITEMS
+    /// Clears all the values stored in the keychain
     public func clearKeyChain() throws {
         let query: [String: AnyObject] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -445,7 +450,11 @@ extension KeychainManager {
             throw KeychainError.unknown(status) }
     }
     
-    //MARK: - DLETE WEB CREDENTIALS
+    //MARK: DLETE WEB CREDENTIALS
+    /// FFunction to DELETE/REMOVE passwords saved on Keychain
+    /// - Parameters:
+    ///   - server: Contains the server's domain name or IP address
+    ///   - account: Account name of keychain holder
     public func delete(server: String, account: String) throws {
         
         var query: [String: AnyObject] = [
