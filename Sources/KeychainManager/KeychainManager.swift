@@ -331,6 +331,10 @@ extension KeychainManager {
     }
     
     //MARK: Update Bool Values
+    /// Function to UPDATE any bool value stored in Keychain
+    /// - Parameters:
+    ///   - value: specifies the new bool value to be updated
+    ///   - account: Account name of keychain holder
     public func update(value: Bool, account: String) {
         let bytes: [UInt8] = value ? [1] : [0]
         
@@ -342,6 +346,10 @@ extension KeychainManager {
     }
     
     //MARK: Update String Value
+    /// Function to UPDATE any string value stored in Keychain
+    /// - Parameters:
+    ///   - value: specifies the new string value to be updated
+    ///   - account: Account name of keychain holder
     public func update(value: String, account: String) {
         do {
             print("⚠️ Val: \(value.data(using: .utf8) ?? Data()) | Acc: \(account)")
@@ -352,6 +360,10 @@ extension KeychainManager {
     }
     
     //MARK: Update Custom Objects
+    /// Function to UPDATE any  codable object stored in Keychain
+    /// - Parameters:
+    ///   - object: specifies the new object to be updated
+    ///   - account: Account name of keychain holder
     public func update<T: Codable> (object: T, account: String) {
         
         guard let userData = try? JSONEncoder().encode(object) else { return }
@@ -387,9 +399,13 @@ extension KeychainManager {
     }
     
     //MARK: Update Web Credentials
-    public func update(account: String, newPassword: String) {
+    /// Function to UPDATE any password stored in Keychain
+    /// - Parameters:
+    ///   - account: Account name of keychain holder
+    ///   - password:  specifies the new password to be updated
+    public func update(account: String, password: String) {
         do {
-            let encryptedPassword = newPassword.data(using: .utf8) ?? Data()
+            let encryptedPassword = password.data(using: .utf8) ?? Data()
             print(encryptedPassword)
             try update(account: account, password: encryptedPassword)
             
