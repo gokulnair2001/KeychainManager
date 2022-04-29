@@ -486,8 +486,8 @@ extension KeychainManager {
         if isSynchronizable {
             print("sync ✅")
             var result: [String: AnyObject] = queryItems
+            result[KMConstants.accessGroup] = accessGroup as AnyObject
             result[KMConstants.synchronizable] = isSynchronizable ? kCFBooleanTrue as AnyObject : kSecAttrSynchronizableAny as AnyObject
-           // result[KMConstants.accessGroup] = accessGroup as AnyObject
             return result
         }
         
@@ -496,7 +496,6 @@ extension KeychainManager {
     
     /// Method to add accessibility type
     func addAccessibility(queryItems: [String: AnyObject], accessType: accessibilityType? = nil) -> [String: AnyObject] {
-        print("access ⭐️")
         if accessType != nil {
             var result: [String: AnyObject] = queryItems
             let selectedAccess = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessType!.value(), [], nil)
