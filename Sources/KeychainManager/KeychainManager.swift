@@ -13,9 +13,13 @@ open class KeychainManager {
     /// Such Prefix are best used when performing tests. Eg: test_account1_
     fileprivate var keyPrefix: String = ""
     
+    /// AccessGroup: Unique access group ID
+    /// Used to sync data among same ID devices
+    fileprivate var accessGroup: String = ""
+    
     /// Synchronizable: Bool which specifies if synchronizable data.
     /// When enabled all the keychains will be saved on the users iCloud account.
-    open var synchronizable: Bool = false
+    fileprivate var synchronizable: Bool = false
     
     /// Accessibility: Used to define the Keychain accessibility.
     /// The abstract consists of various types, select the most restrictive option to safe guard the data
@@ -26,14 +30,16 @@ open class KeychainManager {
         self.keyPrefix = keyPrefix
     }
     
-    /// Initialiser to pre set  iCloud sync state of Keychain
-    public init(synchronizable: Bool) {
+    /// Initialiser to pre set  access group and iCloud sync state of Keychain
+    public init(accessGroup:String, synchronizable: Bool) {
+        self.accessGroup = accessGroup
         self.synchronizable = synchronizable
     }
     
-    /// Initialiser to pre set keyPrefix and sync state of Keychain
-    public init(keyPrefix: String, synchronizable: Bool) {
+    /// Initialiser to pre set keyPrefix, access group and sync state of Keychain
+    public init(keyPrefix: String, accessGroup:String, synchronizable: Bool) {
         self.keyPrefix = keyPrefix
+        self.accessGroup = accessGroup
         self.synchronizable = synchronizable
     }
     
@@ -481,6 +487,7 @@ extension KeychainManager {
             print("sync ✅")
             var result: [String: AnyObject] = queryItems
             result[KMConstants.synchronizable] = isSynchronizable ? kCFBooleanTrue as AnyObject : kSecAttrSynchronizableAny as AnyObject
+            result[KMConstants.accessGroup] = accessGroup as AnyObject
             return result
         }
         
@@ -499,4 +506,5 @@ extension KeychainManager {
         
         return queryItems
     }
+    
 }
