@@ -175,7 +175,8 @@ extension KeychainManager {
             KMConstants.classType   :  kSecClassGenericPassword,
             KMConstants.service     :  service as AnyObject,
             KMConstants.account     :  (keyPrefix + account) as AnyObject,
-            KMConstants.returnData  :  kCFBooleanTrue,
+            KMConstants.returnAttributes : kCFBooleanTrue,
+            //KMConstants.returnData  :  kCFBooleanTrue,
             KMConstants.matchLimit  :  kSecMatchLimitOne,
         ]
         
@@ -485,7 +486,7 @@ extension KeychainManager {
         if isSynchronizable {
             print("sync ✅\(accessGroup)")
             var result: [String: AnyObject] = queryItems
-          //  result[KMConstants.accessGroup] = accessGroup as AnyObject
+            result[KMConstants.accessGroup] = accessGroup as AnyObject
             result[KMConstants.synchronizable] = isSynchronizable ? kCFBooleanTrue as AnyObject : kSecAttrSynchronizableAny as AnyObject
             return result
         }
