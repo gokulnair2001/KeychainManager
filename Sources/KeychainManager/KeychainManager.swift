@@ -176,7 +176,7 @@ extension KeychainManager {
             KMConstants.service     :  service as AnyObject,
             KMConstants.account     :  (keyPrefix + account) as AnyObject,
             KMConstants.returnAttributes : kCFBooleanTrue,
-            //KMConstants.returnData  :  kCFBooleanTrue,
+            KMConstants.returnData  :  kCFBooleanTrue,
             KMConstants.matchLimit  :  kSecMatchLimitOne,
         ]
         
@@ -185,7 +185,7 @@ extension KeychainManager {
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
         
-        print("Read Status: \(status)")
+        print("Read Status: \(status.description)")
         
         return result as? Data
     }
