@@ -485,7 +485,7 @@ extension KeychainManager {
         if isSynchronizable {
             print("sync ✅\(accessGroup)")
             var result: [String: AnyObject] = queryItems
-            result[KMConstants.accessGroup] = accessGroup as AnyObject
+          //  result[KMConstants.accessGroup] = accessGroup as AnyObject
             result[KMConstants.synchronizable] = isSynchronizable ? kCFBooleanTrue as AnyObject : kSecAttrSynchronizableAny as AnyObject
             return result
         }
