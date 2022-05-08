@@ -175,12 +175,11 @@ extension KeychainManager {
             KMConstants.classType   :  kSecClassGenericPassword,
             KMConstants.service     :  service as AnyObject,
             KMConstants.account     :  (keyPrefix + account) as AnyObject,
-            KMConstants.returnAttributes : kCFBooleanTrue,
             KMConstants.returnData  :  kCFBooleanTrue,
             KMConstants.matchLimit  :  kSecMatchLimitOne,
         ]
         
-        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
+      //  query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
