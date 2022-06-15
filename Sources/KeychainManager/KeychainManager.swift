@@ -316,7 +316,8 @@ extension KeychainManager {
         
         let attributes: [String: Any] = [
             KMConstants.account    :  (keyPrefix + account) as AnyObject,
-            KMConstants.valueData  :  value
+            KMConstants.valueData  :  value,
+            KMConstants.dataProtection : kCFBooleanTrue as AnyObject,
         ]
         
         var query: [String: AnyObject] = [
