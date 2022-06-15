@@ -51,13 +51,13 @@ extension KeychainManager {
     fileprivate func set(value: Data, service: String, account: String) throws {
         
         var query: [String: AnyObject] = [
-            KMConstants.classType  :  kSecClassGenericPassword,
-            KMConstants.service    :  service as AnyObject,
-            KMConstants.account    :  (keyPrefix + account) as AnyObject,
-            KMConstants.valueData  :  value as AnyObject,
+            KMConstants.classType      :  kSecClassGenericPassword,
+            KMConstants.service        :  service as AnyObject,
+            KMConstants.account        :  (keyPrefix + account) as AnyObject,
+            KMConstants.valueData      :  value as AnyObject,
+            KMConstants.dataProtection : kCFBooleanTrue as AnyObject,
         ]
         
-        query = useDataProtectionKeychain(queryItems: query)
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         let status = SecItemAdd(query as CFDictionary, nil)
@@ -483,17 +483,6 @@ extension KeychainManager {
             var result: [String: AnyObject] = queryItems
             result[KMConstants.accessGroup] = accessGroup as AnyObject
             result[KMConstants.synchronizable] = isSynchronizable ? kCFBooleanTrue as AnyObject : kSecAttrSynchronizableAny as AnyObject
-            return result
-        }
-        
-        return queryItems
-    }
-    
-    /// Method to add kSecUseDataProtectionKeychain
-    func useDataProtectionKeychain(queryItems: [String: AnyObject]) -> [String: AnyObject] {
-        if #available(iOS 13.0, *) {
-            var result: [String: AnyObject] = queryItems
-            result[KMConstants.dataProtection] = kCFBooleanTrue as AnyObject
             return result
         }
         
