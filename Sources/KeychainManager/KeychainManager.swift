@@ -13,33 +13,35 @@ open class KeychainManager {
     /// Such Prefix are best used when performing tests. Eg: test_account1_
     fileprivate var keyPrefix: String = ""
     
+    /// AccessGroup: Unique access group ID
+    /// Used to sync data among same ID devices
+    fileprivate var accessGroup: String = ""
+    
     /// Synchronizable: Bool which specifies if synchronizable data.
     /// When enabled all the keychains will be saved on the users iCloud account.
-    open var synchronizable: Bool = false
-    
-    /// Accessibility: Used to define the Keychain accessibility.
-    /// The abstract consists of various types, select the most restrictive option to safe guard the data
-    open var accessibility: accessibilityType? = nil
+    fileprivate var synchronizable: Bool = false
     
     /// Initialiser to pre set KeyPrefix
     public init(keyPrefix: String) {
         self.keyPrefix = keyPrefix
     }
     
-    /// Initialiser to pre set  iCloud sync state of Keychain
-    public init(synchronizable: Bool) {
+    /// Initialiser to pre set  access group and iCloud sync state of Keychain
+    public init(accessGroup:String, synchronizable: Bool) {
+        self.accessGroup = accessGroup
         self.synchronizable = synchronizable
     }
     
-    /// Initialiser to pre set keyPrefix and sync state of Keychain
-    public init(keyPrefix: String, synchronizable: Bool) {
+    /// Initialiser to pre set keyPrefix, access group and sync state of Keychain
+    public init(keyPrefix: String, accessGroup:String, synchronizable: Bool) {
         self.keyPrefix = keyPrefix
+        self.accessGroup = accessGroup
         self.synchronizable = synchronizable
     }
     
     /// Empty Initialiser to use generic keyChain
     public init() {}
-
+    
 }
 
 //MARK: - SET
@@ -47,7 +49,7 @@ extension KeychainManager {
     
     //MARK: SET DRIVER CODE
     fileprivate func set(value: Data, service: String, account: String) throws {
-       
+        
         var query: [String: AnyObject] = [
             KMConstants.classType  :  kSecClassGenericPassword,
             KMConstants.service    :  service as AnyObject,
@@ -55,12 +57,12 @@ extension KeychainManager {
             KMConstants.valueData  :  value as AnyObject,
         ]
         
-        query = addAccessibility(queryItems: query, accessType: accessibility)
+        query = useDataProtectionKeychain(queryItems: query)
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         let status = SecItemAdd(query as CFDictionary, nil)
         
-    
+        
         guard status != errSecDuplicateItem else {
             throw KeychainError.duplicateEntry
         }
@@ -118,7 +120,7 @@ extension KeychainManager {
     
     //MARK: SET WEB CREDENTIALS DRIVER
     fileprivate func set(server: String, user: String, password: String) throws {
-       
+        
         let encryptedPassword = password.data(using: .utf8)
         
         var query: [String : AnyObject] = [
@@ -128,7 +130,6 @@ extension KeychainManager {
             KMConstants.valueData  :  encryptedPassword as AnyObject,
         ]
         
-        query = addAccessibility(queryItems: query, accessType: accessibility)
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         let status = SecItemAdd(query as CFDictionary, nil)
@@ -169,6 +170,7 @@ extension KeychainManager {
             KMConstants.classType   :  kSecClassGenericPassword,
             KMConstants.service     :  service as AnyObject,
             KMConstants.account     :  (keyPrefix + account) as AnyObject,
+            KMConstants.returnAttributes : kCFBooleanTrue,
             KMConstants.returnData  :  kCFBooleanTrue,
             KMConstants.matchLimit  :  kSecMatchLimitOne,
         ]
@@ -178,7 +180,7 @@ extension KeychainManager {
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
         
-        print("Read Status: \(status)")
+        print("Read Status: \(status.description)")
         
         return result as? Data
     }
@@ -406,7 +408,6 @@ extension KeychainManager {
     public func update(account: String, password: String) {
         do {
             let encryptedPassword = password.data(using: .utf8) ?? Data()
-            print(encryptedPassword)
             try update(account: account, password: encryptedPassword)
             
         }catch {
@@ -476,10 +477,11 @@ extension KeychainManager {
     
     /// Method to enable iCloud Sync
     func addSyncIfRequired(queryItems: [String: AnyObject], isSynchronizable: Bool) -> [String: AnyObject] {
-       
+        
         if isSynchronizable {
-            print("sync ✅")
+            print("sync ✅\(accessGroup)")
             var result: [String: AnyObject] = queryItems
+            result[KMConstants.accessGroup] = accessGroup as AnyObject
             result[KMConstants.synchronizable] = isSynchronizable ? kCFBooleanTrue as AnyObject : kSecAttrSynchronizableAny as AnyObject
             return result
         }
@@ -487,16 +489,15 @@ extension KeychainManager {
         return queryItems
     }
     
-    /// Method to add accessibility type
-    func addAccessibility(queryItems: [String: AnyObject], accessType: accessibilityType? = nil) -> [String: AnyObject] {
-        print("access ⭐️")
-        if accessType != nil {
+    /// Method to add kSecUseDataProtectionKeychain
+    func useDataProtectionKeychain(queryItems: [String: AnyObject]) -> [String: AnyObject] {
+        if #available(iOS 13.0, *) {
             var result: [String: AnyObject] = queryItems
-            let selectedAccess = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessType!.value(), [], nil)
-            result[KMConstants.accessType] = selectedAccess as AnyObject
+            result[KMConstants.dataProtection] = kCFBooleanTrue as AnyObject
             return result
         }
         
         return queryItems
     }
+    
 }

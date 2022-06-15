@@ -29,9 +29,12 @@ public struct KMConstants {
     
     static var server: String {return castToString(kSecAttrServer)}
     
-    static var accessType: String {return castToString(kSecAttrAccessControl)}
+   // static var accessType: String {return castToString(kSecAttrAccessControl)}
     
     static var synchronizable: String {return castToString(kSecAttrSynchronizable)}
+    
+    @available(iOS 13.0, *)
+    static var dataProtection: String {return castToString(kSecUseDataProtectionKeychain)}
     
     //MARK: - Keychain Type
     
