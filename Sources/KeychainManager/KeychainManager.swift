@@ -311,7 +311,7 @@ extension KeychainManager {
 //MARK: - UPDATE
 extension KeychainManager {
     
-    //MARK: UPDATE DRIVER CODE
+    //MARK: UPDATE DRIVER CODE FOR GENERIC PASSWORD
     fileprivate func update(value: Data, account: String)  throws {
         
         let attributes: [String: Any] = [
@@ -320,7 +320,8 @@ extension KeychainManager {
         ]
         
         var query: [String: AnyObject] = [
-            kSecClass as String: kSecClassGenericPassword,
+            KMConstants.classType : kSecClassGenericPassword,
+           // KMConstants.service   : "" as AnyObject
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
@@ -371,7 +372,7 @@ extension KeychainManager {
         guard let userData = try? JSONEncoder().encode(object) else { return }
        
         do {
-            try update(value: userData.base64EncodedData(), account: account)
+            try update(value: userData, account: account)
             
         }catch {
             print(error.localizedDescription)
@@ -379,16 +380,17 @@ extension KeychainManager {
     }
     
     //MARK: UPDATE WEB CREDENTIALS DRIVER
-    fileprivate func update(account: String, password: Data) throws {
+    fileprivate func update(server: String, account: String, password: Data) throws {
         
         let attributes: [String: Any] = [
             
-            KMConstants.account    :  account as AnyObject,
+            KMConstants.account    :  (keyPrefix + account) as AnyObject,
             KMConstants.valueData  :  password as AnyObject,
         ]
         
         var query: [String: AnyObject] = [
             KMConstants.classType : kSecClassInternetPassword,
+            KMConstants.server    : server as AnyObject,
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
@@ -405,10 +407,10 @@ extension KeychainManager {
     /// - Parameters:
     ///   - account: Account name of keychain holder
     ///   - password:  specifies the new password to be updated
-    public func update(account: String, password: String) {
+    public func update(server: String, account: String, password: String) {
         do {
             let encryptedPassword = password.data(using: .utf8) ?? Data()
-            try update(account: account, password: encryptedPassword)
+            try update(server: server, account: account, password: encryptedPassword)
             
         }catch {
             print("⚠️ \(error.localizedDescription)")
