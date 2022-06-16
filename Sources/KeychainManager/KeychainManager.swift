@@ -39,6 +39,8 @@ open class KeychainManager {
         self.synchronizable = synchronizable
     }
     
+    /// Flag to handle Custom Object Storage
+    private var isCustomObjectType: Bool = false
     
     /// Empty Initialiser to use generic keyChain
     public init() {}
@@ -324,8 +326,11 @@ extension KeychainManager {
             KMConstants.classType : kSecClassGenericPassword,
             KMConstants.service   : service as AnyObject
         ]
-        
-      //  query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
+        if !isCustomObjectType {
+            query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
+        }else {
+            isCustomObjectType.toggle()
+        }
         
         let status = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
         
@@ -338,6 +343,7 @@ extension KeychainManager {
     /// Function to UPDATE any bool value stored in Keychain
     /// - Parameters:
     ///   - value: specifies the new bool value to be updated
+    ///   - service: String to specify the service associated with this item
     ///   - account: Account name of keychain holder
     public func update(value: Bool, service: String, account: String) {
         let bytes: [UInt8] = value ? [1] : [0]
@@ -353,6 +359,7 @@ extension KeychainManager {
     /// Function to UPDATE any string value stored in Keychain
     /// - Parameters:
     ///   - value: specifies the new string value to be updated
+    ///   - service: String to specify the service associated with this item
     ///   - account: Account name of keychain holder
     public func update(value: String, service: String, account: String) {
         do {
@@ -367,6 +374,7 @@ extension KeychainManager {
     /// Function to UPDATE any codable object stored in Keychain
     /// - Parameters:
     ///   - object: specifies the new object to be updated
+    ///   - service: String to specify the service associated with this item
     ///   - account: Account name of keychain holder
     public func update<T: Codable> (object: T, service: String, account: String) {
         
@@ -374,7 +382,7 @@ extension KeychainManager {
         
         do {
             try update(value: userData, account: account, service: service)
-            
+            isCustomObjectType = true
         }catch {
             print(error.localizedDescription)
         }
@@ -405,8 +413,9 @@ extension KeychainManager {
     //MARK: Update Web Credentials
     /// Function to UPDATE any password stored in Keychain
     /// - Parameters:
+    ///   - server: Contains the server's domain name or IP address
     ///   - account: Account name of keychain holder
-    ///   - password:  specifies the new password to be updated
+    ///   - password: Specifies the new password to be updated
     public func update(server: String, account: String, password: String) {
         do {
             let encryptedPassword = password.data(using: .utf8) ?? Data()
@@ -425,7 +434,6 @@ extension KeychainManager {
     /// Function to DELETE/REMOVE a keychain value
     /// - Parameters:
     ///   - service: String to specify the service associated with this item
-    ///   - account: Account name of keychain holder
     public func delete(service: String) throws {
         
         var query: [String: AnyObject] = [
@@ -433,7 +441,11 @@ extension KeychainManager {
             KMConstants.service    :  service as AnyObject,
         ]
         
-       // query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
+        if !isCustomObjectType {
+            query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
+        }else {
+            isCustomObjectType.toggle()
+        }
         
         let status = SecItemDelete(query as CFDictionary)
         guard status == errSecSuccess || status == errSecItemNotFound else {
@@ -476,7 +488,7 @@ extension KeychainManager {
 extension KeychainManager {
     
     /// Method to enable iCloud Sync
-    func addSyncIfRequired(queryItems: [String: AnyObject], isSynchronizable: Bool) -> [String: AnyObject] {
+    private func addSyncIfRequired(queryItems: [String: AnyObject], isSynchronizable: Bool) -> [String: AnyObject] {
         
         if isSynchronizable {
             print("sync ✅\(accessGroup)")
