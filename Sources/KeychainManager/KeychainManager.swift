@@ -433,7 +433,7 @@ extension KeychainManager {
             KMConstants.service    :  service as AnyObject,
         ]
         
-      //  query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
+        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         let status = SecItemDelete(query as CFDictionary)
         guard status == errSecSuccess || status == errSecItemNotFound else {
