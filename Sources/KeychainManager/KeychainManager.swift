@@ -55,7 +55,7 @@ extension KeychainManager {
             KMConstants.service        :  service as AnyObject,
             KMConstants.account        :  (keyPrefix + account) as AnyObject,
             KMConstants.valueData      :  value as AnyObject,
-            KMConstants.dataProtection : kCFBooleanTrue as AnyObject,
+            KMConstants.dataProtection :  kCFBooleanTrue as AnyObject,
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
@@ -128,6 +128,7 @@ extension KeychainManager {
             KMConstants.account    :  user as AnyObject,
             KMConstants.server     :  server as AnyObject,
             KMConstants.valueData  :  encryptedPassword as AnyObject,
+            KMConstants.dataProtection : kCFBooleanTrue as AnyObject,
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
@@ -164,15 +165,14 @@ extension KeychainManager {
 extension KeychainManager {
     
     //MARK: GET DRIVER CODE
-    fileprivate func get(service: String, account: String) -> Data? {
+    fileprivate func get(service: String, account: String) -> (value: Data?, status: OSStatus) {
         
         var query: [String: AnyObject] = [
             KMConstants.classType   :  kSecClassGenericPassword,
             KMConstants.service     :  service as AnyObject,
             KMConstants.account     :  (keyPrefix + account) as AnyObject,
-            KMConstants.returnAttributes : kCFBooleanTrue,
             KMConstants.returnData  :  kCFBooleanTrue,
-            KMConstants.matchLimit  :  kSecMatchLimitOne,
+            KMConstants.matchLimit  :  kSecMatchLimitOne
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
@@ -180,9 +180,7 @@ extension KeychainManager {
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
         
-        print("Read Status: \(status.description)")
-        
-        return result as? Data
+        return (result as? Data, status)
     }
     
     //MARK: Method to fetch bool values
@@ -192,8 +190,8 @@ extension KeychainManager {
     ///   - service: String to specify the service associated with this item
     ///   - account: Account name of keychain holder
     /// - Returns: Returns the Bool value stored
-    public func getBool(service: String, account: String) -> Bool{
-        guard let data = get(service: service, account: account) else {return false}
+    public func getBool(service: String, account: String) -> Bool {
+        guard let data = get(service: service, account: account).value else {return false}
         guard let firstBit = data.first else {return false}
         
         return firstBit == 1
@@ -206,10 +204,10 @@ extension KeychainManager {
     ///   - object: Custom Codable object to save
     ///   - service: String to specify the service associated with this item
     ///   - account: Account name of keychain holder
-    /// - Returns: Returns the codable object stored
+    /// - Returns: Returns the Codable object stored
     public func get<T: Codable> (object: T, service: String, account: String) -> T? {
         
-        guard let userData = KeychainManager().get(service: service, account: account) else {return nil}
+        guard let userData = get(service: service, account: account).value else {return nil}
         
         guard let decodedData = try? JSONDecoder().decode(T.self, from: userData) else { return nil}
         
@@ -225,7 +223,7 @@ extension KeychainManager {
     /// - Returns: Returns the String value stored
     public func get(service: String, account: String) -> String {
         
-        let rawData: Data? = get(service: service, account: account)
+        let rawData: Data? = get(service: service, account: account).value
         
         let userData = String(decoding: rawData ?? Data(), as: UTF8.self)
         
@@ -233,7 +231,7 @@ extension KeychainManager {
     }
     
     //MARK: GET WEB CREDENTIALS DRIVER
-    fileprivate func get(server: String, account: String) -> Data? {
+    fileprivate func get(server: String, account: String) -> (password: Data?, status: OSStatus) {
         
         var query: [String: AnyObject] = [
             KMConstants.classType   :  kSecClassInternetPassword,
@@ -248,9 +246,7 @@ extension KeychainManager {
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
         
-        print("Read Status: \(status)")
-        
-        return result as? Data
+        return (result as? Data, status)
     }
     
     //MARK: Method to get Web Credential value
@@ -262,11 +258,44 @@ extension KeychainManager {
     /// - Returns: Returns the password stored
     public func get(server: String, account: String) -> String {
         
-        let rawData: Data? = get(server: server, account: account)
+        let rawData: Data? = get(server: server, account: account).password
         
         let userData = String(decoding: rawData ?? Data(), as: UTF8.self)
         
         return userData
+    }
+    
+    //MARK: - VALIDATE SERVICE AND SERVER
+    /// Function to validate the provided Service and Account combination
+    /// - Parameters:
+    ///   - service: String to specify the service associated with this item
+    ///   - account: Account name of keychain holder
+    /// - Returns: Returns the validation result
+    public func isValidService(service: String, account: String) -> Bool {
+        
+        let status = get(service: service, account: account).status
+        
+        if status == 0 {
+            return true
+        }
+        
+        return false
+    }
+    
+    /// Function to validate the provided Server and Account combination
+    /// - Parameters:
+    ///   - server: Contains the server's domain name or IP address
+    ///   - account: Account name of keychain holder
+    /// - Returns: Returns the validation result
+    public func isValidServer(server: String, account: String) -> Bool {
+        
+        let status = get(server: server, account: account).status
+        
+        if status == 0 {
+            return true
+        }
+        
+        return false
     }
     
     //MARK: - GET ALL VALUES
@@ -311,19 +340,21 @@ extension KeychainManager {
 //MARK: - UPDATE
 extension KeychainManager {
     
-    //MARK: UPDATE DRIVER CODE
-    fileprivate func update(value: Data, account: String)  throws {
+    //MARK: UPDATE DRIVER CODE FOR GENERIC PASSWORD
+    fileprivate func update(value: Data, account: String, service: String, isCustomObjectType: Bool = false)  throws {
         
         let attributes: [String: Any] = [
             KMConstants.account    :  (keyPrefix + account) as AnyObject,
-            KMConstants.valueData  :  value
+            KMConstants.valueData  :  value,
         ]
         
         var query: [String: AnyObject] = [
-            kSecClass as String: kSecClassGenericPassword,
+            KMConstants.classType : kSecClassGenericPassword,
+            KMConstants.service   : service as AnyObject
         ]
-        
-        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
+        if !isCustomObjectType {
+            query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
+        }
         
         let status = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
         
@@ -336,12 +367,13 @@ extension KeychainManager {
     /// Function to UPDATE any bool value stored in Keychain
     /// - Parameters:
     ///   - value: specifies the new bool value to be updated
+    ///   - service: String to specify the service associated with this item
     ///   - account: Account name of keychain holder
-    public func update(value: Bool, account: String) {
+    public func update(value: Bool, service: String, account: String) {
         let bytes: [UInt8] = value ? [1] : [0]
         
         do {
-            try update(value: Data(bytes), account: account)
+            try update(value: Data(bytes), account: account, service: service)
         }catch {
             print(error.localizedDescription)
         }
@@ -351,27 +383,29 @@ extension KeychainManager {
     /// Function to UPDATE any string value stored in Keychain
     /// - Parameters:
     ///   - value: specifies the new string value to be updated
+    ///   - service: String to specify the service associated with this item
     ///   - account: Account name of keychain holder
-    public func update(value: String, account: String) {
+    public func update(value: String, service: String, account: String) {
         do {
-            print("⚠️ Val: \(value.data(using: .utf8) ?? Data()) | Acc: \(account)")
-            try update(value: value.data(using: .utf8) ?? Data(), account: account)
+            try update(value: value.data(using: .utf8) ?? Data(), account: account, service: service)
+            
         }catch {
             print(error.localizedDescription)
         }
     }
     
     //MARK: Update Custom Objects
-    /// Function to UPDATE any  codable object stored in Keychain
+    /// Function to UPDATE any codable object stored in Keychain
     /// - Parameters:
     ///   - object: specifies the new object to be updated
+    ///   - service: String to specify the service associated with this item
     ///   - account: Account name of keychain holder
-    public func update<T: Codable> (object: T, account: String) {
+    public func update<T: Codable> (object: T, service: String, account: String) {
         
         guard let userData = try? JSONEncoder().encode(object) else { return }
         
         do {
-            try update(value: userData, account: account)
+            try update(value: userData, account: account, service: service, isCustomObjectType: true)
             
         }catch {
             print(error.localizedDescription)
@@ -379,16 +413,16 @@ extension KeychainManager {
     }
     
     //MARK: UPDATE WEB CREDENTIALS DRIVER
-    fileprivate func update(account: String, password: Data) throws {
+    fileprivate func update(server: String, account: String, password: Data) throws {
         
         let attributes: [String: Any] = [
-            
-            KMConstants.account    :  account as AnyObject,
+            KMConstants.account    :  (keyPrefix + account) as AnyObject,
             KMConstants.valueData  :  password as AnyObject,
         ]
         
         var query: [String: AnyObject] = [
             KMConstants.classType : kSecClassInternetPassword,
+            KMConstants.server    : server as AnyObject,
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
@@ -403,15 +437,16 @@ extension KeychainManager {
     //MARK: Update Web Credentials
     /// Function to UPDATE any password stored in Keychain
     /// - Parameters:
+    ///   - server: Contains the server's domain name or IP address
     ///   - account: Account name of keychain holder
-    ///   - password:  specifies the new password to be updated
-    public func update(account: String, password: String) {
+    ///   - password: Specifies the new password to be updated
+    public func update(server: String, account: String, password: String) {
         do {
             let encryptedPassword = password.data(using: .utf8) ?? Data()
-            try update(account: account, password: encryptedPassword)
+            try update(server: server, account: account, password: encryptedPassword)
             
         }catch {
-            print("⚠️ \(error.localizedDescription)")
+            print(error.localizedDescription)
         }
     }
 }
@@ -420,48 +455,36 @@ extension KeychainManager {
 extension KeychainManager {
     
     //MARK: DELETE SELECTED ITEM
-    /// Function to DELETE/REMOVE a keychain value
+    /// Function to DELETE / REMOVE a keychain value
     /// - Parameters:
     ///   - service: String to specify the service associated with this item
-    ///   - account: Account name of keychain holder
-    public func delete(service: String, account: String) throws {
+    ///   - isCustomObjectType: Explicitly tells the item to delete is a custom value type
+    public func delete(service: String, isCustomObjectType: Bool = false) throws {
         
         var query: [String: AnyObject] = [
             KMConstants.classType  :  kSecClassGenericPassword,
             KMConstants.service    :  service as AnyObject,
-            KMConstants.account    :  (keyPrefix + account) as AnyObject,
         ]
         
-        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
+        if !isCustomObjectType {
+            query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
+        }
         
         let status = SecItemDelete(query as CFDictionary)
         guard status == errSecSuccess || status == errSecItemNotFound else {
             throw KeychainError.unknown(status) }
     }
     
-    //MARK: DELETE ALL ITEMS
-    /// Clears all the values stored in the keychain
-    public func clearKeyChain() throws {
-        let query: [String: AnyObject] = [
-            kSecClass as String: kSecClassGenericPassword,
-        ]
-        
-        let status = SecItemDelete(query as CFDictionary)
-        guard status == errSecSuccess || status == errSecItemNotFound else {
-            throw KeychainError.unknown(status) }
-    }
-    
-    //MARK: DLETE WEB CREDENTIALS
-    /// FFunction to DELETE/REMOVE passwords saved on Keychain
+    //MARK: DELETE WEB CREDENTIALS
+    /// FFunction to DELETE / REMOVE passwords saved on Keychain
     /// - Parameters:
     ///   - server: Contains the server's domain name or IP address
     ///   - account: Account name of keychain holder
-    public func delete(server: String, account: String) throws {
+    public func delete(server: String) throws {
         
         var query: [String: AnyObject] = [
             KMConstants.classType  :  kSecClassInternetPassword,
             KMConstants.server     :  server as AnyObject,
-            KMConstants.account    :  account as AnyObject,
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
@@ -476,17 +499,16 @@ extension KeychainManager {
 extension KeychainManager {
     
     /// Method to enable iCloud Sync
-    func addSyncIfRequired(queryItems: [String: AnyObject], isSynchronizable: Bool) -> [String: AnyObject] {
+    private func addSyncIfRequired(queryItems: [String: AnyObject], isSynchronizable: Bool) -> [String: AnyObject] {
         
         if isSynchronizable {
-            print("sync ✅\(accessGroup)")
             var result: [String: AnyObject] = queryItems
             result[KMConstants.accessGroup] = accessGroup as AnyObject
             result[KMConstants.synchronizable] = isSynchronizable ? kCFBooleanTrue as AnyObject : kSecAttrSynchronizableAny as AnyObject
+            
             return result
         }
         
         return queryItems
     }
-    
 }
