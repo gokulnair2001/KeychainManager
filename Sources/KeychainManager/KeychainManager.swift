@@ -174,6 +174,7 @@ extension KeychainManager {
             KMConstants.returnAttributes : kCFBooleanTrue,
             KMConstants.returnData  :  kCFBooleanTrue,
             KMConstants.matchLimit  :  kSecMatchLimitOne,
+            KMConstants.dataProtection : kCFBooleanTrue,
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
