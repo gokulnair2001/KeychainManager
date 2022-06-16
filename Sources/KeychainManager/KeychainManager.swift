@@ -55,7 +55,7 @@ extension KeychainManager {
             KMConstants.service        :  service as AnyObject,
             KMConstants.account        :  (keyPrefix + account) as AnyObject,
             KMConstants.valueData      :  value as AnyObject,
-            //KMConstants.dataProtection : kCFBooleanTrue as AnyObject,
+            KMConstants.dataProtection : kCFBooleanTrue as AnyObject,
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
@@ -128,6 +128,7 @@ extension KeychainManager {
             KMConstants.account    :  user as AnyObject,
             KMConstants.server     :  server as AnyObject,
             KMConstants.valueData  :  encryptedPassword as AnyObject,
+            KMConstants.dataProtection : kCFBooleanTrue as AnyObject,
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
