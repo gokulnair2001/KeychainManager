@@ -319,12 +319,12 @@ extension KeychainManager {
             KMConstants.valueData  :  value,
         ]
         
-        var query: [String: AnyObject] = [
+        let query: [String: AnyObject] = [
             KMConstants.classType : kSecClassGenericPassword,
             KMConstants.service   : service as AnyObject
         ]
         
-        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
+        //query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         let status = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
         
