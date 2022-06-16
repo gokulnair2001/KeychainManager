@@ -39,6 +39,9 @@ open class KeychainManager {
         self.synchronizable = synchronizable
     }
     
+    /// Flag to identify custom object item
+    private var isCustomValueType: Bool = false
+    
     /// Empty Initialiser to use generic keyChain
     public init() {}
     
@@ -373,6 +376,7 @@ extension KeychainManager {
         
         do {
             try update(value: userData, account: account, service: service)
+            isCustomValueType = true
             
         }catch {
             print(error.localizedDescription)
@@ -426,12 +430,11 @@ extension KeychainManager {
     /// - Parameters:
     ///   - service: String to specify the service associated with this item
     ///   - account: Account name of keychain holder
-    public func delete(service: String, account: String) throws {
+    public func delete(service: String) throws {
         
         var query: [String: AnyObject] = [
             KMConstants.classType  :  kSecClassGenericPassword,
             KMConstants.service    :  service as AnyObject,
-            //KMConstants.account    :  (keyPrefix + account) as AnyObject,
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
@@ -458,12 +461,11 @@ extension KeychainManager {
     /// - Parameters:
     ///   - server: Contains the server's domain name or IP address
     ///   - account: Account name of keychain holder
-    public func delete(server: String, account: String) throws {
+    public func delete(server: String) throws {
         
         var query: [String: AnyObject] = [
             KMConstants.classType  :  kSecClassInternetPassword,
             KMConstants.server     :  server as AnyObject,
-          //  KMConstants.account    :  account as AnyObject,
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
@@ -480,11 +482,14 @@ extension KeychainManager {
     /// Method to enable iCloud Sync
     func addSyncIfRequired(queryItems: [String: AnyObject], isSynchronizable: Bool) -> [String: AnyObject] {
         
-        if isSynchronizable {
+        if isSynchronizable && !isCustomValueType {
             print("sync ✅\(accessGroup)")
             var result: [String: AnyObject] = queryItems
             result[KMConstants.accessGroup] = accessGroup as AnyObject
             result[KMConstants.synchronizable] = isSynchronizable ? kCFBooleanTrue as AnyObject : kSecAttrSynchronizableAny as AnyObject
+            
+            isCustomValueType = false
+            
             return result
         }
         
