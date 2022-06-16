@@ -39,9 +39,6 @@ open class KeychainManager {
         self.synchronizable = synchronizable
     }
     
-    /// Flag to handle Custom Object Storage
-    private var isCustomObjectType: Bool = false
-    
     /// Empty Initialiser to use generic keyChain
     public init() {}
     
@@ -315,7 +312,7 @@ extension KeychainManager {
 extension KeychainManager {
     
     //MARK: UPDATE DRIVER CODE FOR GENERIC PASSWORD
-    fileprivate func update(value: Data, account: String, service: String)  throws {
+    fileprivate func update(value: Data, account: String, service: String, isCustomObjectType: Bool = false)  throws {
         
         let attributes: [String: Any] = [
             KMConstants.account    :  (keyPrefix + account) as AnyObject,
@@ -328,8 +325,6 @@ extension KeychainManager {
         ]
         if !isCustomObjectType {
             query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
-        }else {
-            isCustomObjectType.toggle()
         }
         
         let status = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
@@ -381,8 +376,8 @@ extension KeychainManager {
         guard let userData = try? JSONEncoder().encode(object) else { return }
         
         do {
-            try update(value: userData, account: account, service: service)
-            isCustomObjectType = true
+            try update(value: userData, account: account, service: service, isCustomObjectType: true)
+           
         }catch {
             print(error.localizedDescription)
         }
@@ -434,7 +429,7 @@ extension KeychainManager {
     /// Function to DELETE/REMOVE a keychain value
     /// - Parameters:
     ///   - service: String to specify the service associated with this item
-    public func delete(service: String) throws {
+    public func delete(service: String, isCustomObjectType: Bool = false) throws {
         
         var query: [String: AnyObject] = [
             KMConstants.classType  :  kSecClassGenericPassword,
@@ -443,14 +438,13 @@ extension KeychainManager {
         
         if !isCustomObjectType {
             query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
-        }else {
-            isCustomObjectType.toggle()
         }
         
         let status = SecItemDelete(query as CFDictionary)
         guard status == errSecSuccess || status == errSecItemNotFound else {
             throw KeychainError.unknown(status) }
     }
+    
     
     //MARK: DELETE ALL ITEMS
     /// Clears all the values stored in the keychain
