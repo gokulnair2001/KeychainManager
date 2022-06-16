@@ -55,7 +55,7 @@ extension KeychainManager {
             KMConstants.service        :  service as AnyObject,
             KMConstants.account        :  (keyPrefix + account) as AnyObject,
             KMConstants.valueData      :  value as AnyObject,
-            KMConstants.dataProtection : kCFBooleanTrue as AnyObject,
+            KMConstants.dataProtection :  kCFBooleanTrue as AnyObject,
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
@@ -362,17 +362,16 @@ extension KeychainManager {
     }
     
     //MARK: Update Custom Objects
-    /// Function to UPDATE any  codable object stored in Keychain
+    /// Function to UPDATE any codable object stored in Keychain
     /// - Parameters:
     ///   - object: specifies the new object to be updated
     ///   - account: Account name of keychain holder
     public func update<T: Codable> (object: T, account: String) {
         
         guard let userData = try? JSONEncoder().encode(object) else { return }
-        print("⏳\(userData)")
+       
         do {
-            try update(value: userData, account: account)
-            print("success")
+            try update(value: userData.base64EncodedData(), account: account)
             
         }catch {
             print(error.localizedDescription)
