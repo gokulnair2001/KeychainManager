@@ -319,12 +319,12 @@ extension KeychainManager {
             KMConstants.valueData  :  value,
         ]
         
-        let query: [String: AnyObject] = [
+        var query: [String: AnyObject] = [
             KMConstants.classType : kSecClassGenericPassword,
             KMConstants.service   : service as AnyObject
         ]
         
-        //query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
+        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         let status = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
         
@@ -428,13 +428,13 @@ extension KeychainManager {
     ///   - account: Account name of keychain holder
     public func delete(service: String, account: String) throws {
         
-        let query: [String: AnyObject] = [
+        var query: [String: AnyObject] = [
             KMConstants.classType  :  kSecClassGenericPassword,
             KMConstants.service    :  service as AnyObject,
-            KMConstants.account    :  (keyPrefix + account) as AnyObject,
+            //KMConstants.account    :  (keyPrefix + account) as AnyObject,
         ]
         
-       // query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
+        query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         
         let status = SecItemDelete(query as CFDictionary)
         guard status == errSecSuccess || status == errSecItemNotFound else {
