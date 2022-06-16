@@ -39,8 +39,6 @@ open class KeychainManager {
         self.synchronizable = synchronizable
     }
     
-    /// Flag to identify custom object item
-    private var isCustomValueType: Bool = false
     
     /// Empty Initialiser to use generic keyChain
     public init() {}
@@ -376,7 +374,6 @@ extension KeychainManager {
         
         do {
             try update(value: userData, account: account, service: service)
-            isCustomValueType = true
             
         }catch {
             print(error.localizedDescription)
@@ -482,13 +479,11 @@ extension KeychainManager {
     /// Method to enable iCloud Sync
     func addSyncIfRequired(queryItems: [String: AnyObject], isSynchronizable: Bool) -> [String: AnyObject] {
         
-        if isSynchronizable && !isCustomValueType {
+        if isSynchronizable {
             print("sync ✅\(accessGroup)")
             var result: [String: AnyObject] = queryItems
             result[KMConstants.accessGroup] = accessGroup as AnyObject
             result[KMConstants.synchronizable] = isSynchronizable ? kCFBooleanTrue as AnyObject : kSecAttrSynchronizableAny as AnyObject
-            
-            isCustomValueType = false
             
             return result
         }
