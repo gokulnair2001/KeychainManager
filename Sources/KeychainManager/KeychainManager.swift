@@ -370,7 +370,7 @@ extension KeychainManager {
     public func update<T: Codable> (object: T, service: String, account: String) {
         
         guard let userData = try? JSONEncoder().encode(object) else { return }
-       
+        
         do {
             try update(value: userData, account: account, service: service)
             
@@ -431,7 +431,7 @@ extension KeychainManager {
         var query: [String: AnyObject] = [
             KMConstants.classType  :  kSecClassGenericPassword,
             KMConstants.service    :  service as AnyObject,
-            KMConstants.account    :  (keyPrefix + account) as AnyObject,
+            //KMConstants.account    :  (keyPrefix + account) as AnyObject,
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
@@ -454,7 +454,7 @@ extension KeychainManager {
     }
     
     //MARK: DELETE WEB CREDENTIALS
-    /// FFunction to DELETE/REMOVE passwords saved on Keychain
+    /// FFunction to DELETE / REMOVE passwords saved on Keychain
     /// - Parameters:
     ///   - server: Contains the server's domain name or IP address
     ///   - account: Account name of keychain holder
@@ -463,7 +463,7 @@ extension KeychainManager {
         var query: [String: AnyObject] = [
             KMConstants.classType  :  kSecClassInternetPassword,
             KMConstants.server     :  server as AnyObject,
-            KMConstants.account    :  account as AnyObject,
+          //  KMConstants.account    :  account as AnyObject,
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
