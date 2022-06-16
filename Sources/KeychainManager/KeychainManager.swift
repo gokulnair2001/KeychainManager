@@ -431,7 +431,7 @@ extension KeychainManager {
         let query: [String: AnyObject] = [
             KMConstants.classType  :  kSecClassGenericPassword,
             KMConstants.service    :  service as AnyObject,
-            //KMConstants.account    :  (keyPrefix + account) as AnyObject,
+            KMConstants.account    :  (keyPrefix + account) as AnyObject,
         ]
         
        // query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
