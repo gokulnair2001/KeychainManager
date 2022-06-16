@@ -312,7 +312,7 @@ extension KeychainManager {
 extension KeychainManager {
     
     //MARK: UPDATE DRIVER CODE FOR GENERIC PASSWORD
-    fileprivate func update(value: Data, account: String)  throws {
+    fileprivate func update(value: Data, account: String, service: String)  throws {
         
         let attributes: [String: Any] = [
             KMConstants.account    :  (keyPrefix + account) as AnyObject,
@@ -321,7 +321,7 @@ extension KeychainManager {
         
         var query: [String: AnyObject] = [
             KMConstants.classType : kSecClassGenericPassword,
-           // KMConstants.service   : "" as AnyObject
+            KMConstants.service   : service as AnyObject
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
@@ -338,11 +338,11 @@ extension KeychainManager {
     /// - Parameters:
     ///   - value: specifies the new bool value to be updated
     ///   - account: Account name of keychain holder
-    public func update(value: Bool, account: String) {
+    public func update(value: Bool, service: String, account: String) {
         let bytes: [UInt8] = value ? [1] : [0]
         
         do {
-            try update(value: Data(bytes), account: account)
+            try update(value: Data(bytes), account: account, service: service)
         }catch {
             print(error.localizedDescription)
         }
@@ -353,10 +353,10 @@ extension KeychainManager {
     /// - Parameters:
     ///   - value: specifies the new string value to be updated
     ///   - account: Account name of keychain holder
-    public func update(value: String, account: String) {
+    public func update(value: String, service: String, account: String) {
         do {
             print("⚠️ Val: \(value.data(using: .utf8) ?? Data()) | Acc: \(account)")
-            try update(value: value.data(using: .utf8) ?? Data(), account: account)
+            try update(value: value.data(using: .utf8) ?? Data(), account: account, service: service)
         }catch {
             print(error.localizedDescription)
         }
@@ -367,12 +367,12 @@ extension KeychainManager {
     /// - Parameters:
     ///   - object: specifies the new object to be updated
     ///   - account: Account name of keychain holder
-    public func update<T: Codable> (object: T, account: String) {
+    public func update<T: Codable> (object: T, service: String, account: String) {
         
         guard let userData = try? JSONEncoder().encode(object) else { return }
        
         do {
-            try update(value: userData, account: account)
+            try update(value: userData, account: account, service: service)
             
         }catch {
             print(error.localizedDescription)
