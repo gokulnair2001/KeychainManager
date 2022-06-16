@@ -165,7 +165,7 @@ extension KeychainManager {
 extension KeychainManager {
     
     //MARK: GET DRIVER CODE
-    fileprivate func get(service: String, account: String) -> Data? {
+    fileprivate func get(service: String, account: String) -> (value: Data?, status: OSStatus) {
         
         var query: [String: AnyObject] = [
             KMConstants.classType   :  kSecClassGenericPassword,
@@ -180,9 +180,7 @@ extension KeychainManager {
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
         
-        print("Read Status: \(status.description)")
-        
-        return result as? Data
+        return (result as? Data, status)
     }
     
     //MARK: Method to fetch bool values
@@ -192,8 +190,8 @@ extension KeychainManager {
     ///   - service: String to specify the service associated with this item
     ///   - account: Account name of keychain holder
     /// - Returns: Returns the Bool value stored
-    public func getBool(service: String, account: String) -> Bool{
-        guard let data = get(service: service, account: account) else {return false}
+    public func getBool(service: String, account: String) -> Bool {
+        guard let data = get(service: service, account: account).value else {return false}
         guard let firstBit = data.first else {return false}
         
         return firstBit == 1
@@ -209,7 +207,7 @@ extension KeychainManager {
     /// - Returns: Returns the Codable object stored
     public func get<T: Codable> (object: T, service: String, account: String) -> T? {
         
-        guard let userData = KeychainManager().get(service: service, account: account) else {return nil}
+        guard let userData = get(service: service, account: account).value else {return nil}
         
         guard let decodedData = try? JSONDecoder().decode(T.self, from: userData) else { return nil}
         
@@ -225,7 +223,7 @@ extension KeychainManager {
     /// - Returns: Returns the String value stored
     public func get(service: String, account: String) -> String {
         
-        let rawData: Data? = get(service: service, account: account)
+        let rawData: Data? = get(service: service, account: account).value
         
         let userData = String(decoding: rawData ?? Data(), as: UTF8.self)
         
@@ -233,7 +231,7 @@ extension KeychainManager {
     }
     
     //MARK: GET WEB CREDENTIALS DRIVER
-    fileprivate func get(server: String, account: String) -> Data? {
+    fileprivate func get(server: String, account: String) -> (password: Data?, status: OSStatus) {
         
         var query: [String: AnyObject] = [
             KMConstants.classType   :  kSecClassInternetPassword,
@@ -248,9 +246,7 @@ extension KeychainManager {
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
         
-        print("Read Status: \(status)")
-        
-        return result as? Data
+        return (result as? Data, status)
     }
     
     //MARK: Method to get Web Credential value
@@ -262,11 +258,34 @@ extension KeychainManager {
     /// - Returns: Returns the password stored
     public func get(server: String, account: String) -> String {
         
-        let rawData: Data? = get(server: server, account: account)
+        let rawData: Data? = get(server: server, account: account).password
         
         let userData = String(decoding: rawData ?? Data(), as: UTF8.self)
         
         return userData
+    }
+    
+    //MARK: - CHECK ITEM PRESENT
+    public func isValidService(service: String, account: String) -> Bool {
+        
+        let status = get(service: service, account: account).status
+        
+        if status == 0 {
+            return true
+        }
+        
+        return false
+    }
+    
+    public func isValidServer(server: String, account: String) -> Bool {
+        
+        let status = get(server: server, account: account).status
+        
+        if status == 0 {
+            return true
+        }
+        
+        return false
     }
     
     //MARK: - GET ALL VALUES
@@ -358,8 +377,8 @@ extension KeychainManager {
     ///   - account: Account name of keychain holder
     public func update(value: String, service: String, account: String) {
         do {
-            print("⚠️ Val: \(value.data(using: .utf8) ?? Data()) | Acc: \(account)")
             try update(value: value.data(using: .utf8) ?? Data(), account: account, service: service)
+            
         }catch {
             print(error.localizedDescription)
         }
@@ -377,7 +396,7 @@ extension KeychainManager {
         
         do {
             try update(value: userData, account: account, service: service, isCustomObjectType: true)
-           
+            
         }catch {
             print(error.localizedDescription)
         }
@@ -417,7 +436,7 @@ extension KeychainManager {
             try update(server: server, account: account, password: encryptedPassword)
             
         }catch {
-            print("⚠️ \(error.localizedDescription)")
+            print(error.localizedDescription)
         }
     }
 }
@@ -426,9 +445,10 @@ extension KeychainManager {
 extension KeychainManager {
     
     //MARK: DELETE SELECTED ITEM
-    /// Function to DELETE/REMOVE a keychain value
+    /// Function to DELETE / REMOVE a keychain value
     /// - Parameters:
     ///   - service: String to specify the service associated with this item
+    ///   - isCustomObjectType: Explicitly tells the item to delete is a custom value type
     public func delete(service: String, isCustomObjectType: Bool = false) throws {
         
         var query: [String: AnyObject] = [
@@ -439,19 +459,6 @@ extension KeychainManager {
         if !isCustomObjectType {
             query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
         }
-        
-        let status = SecItemDelete(query as CFDictionary)
-        guard status == errSecSuccess || status == errSecItemNotFound else {
-            throw KeychainError.unknown(status) }
-    }
-    
-    
-    //MARK: DELETE ALL ITEMS
-    /// Clears all the values stored in the keychain
-    public func clearKeyChain() throws {
-        let query: [String: AnyObject] = [
-            kSecClass as String: kSecClassGenericPassword,
-        ]
         
         let status = SecItemDelete(query as CFDictionary)
         guard status == errSecSuccess || status == errSecItemNotFound else {
@@ -485,7 +492,6 @@ extension KeychainManager {
     private func addSyncIfRequired(queryItems: [String: AnyObject], isSynchronizable: Bool) -> [String: AnyObject] {
         
         if isSynchronizable {
-            print("sync ✅\(accessGroup)")
             var result: [String: AnyObject] = queryItems
             result[KMConstants.accessGroup] = accessGroup as AnyObject
             result[KMConstants.synchronizable] = isSynchronizable ? kCFBooleanTrue as AnyObject : kSecAttrSynchronizableAny as AnyObject
@@ -495,5 +501,4 @@ extension KeychainManager {
         
         return queryItems
     }
-    
 }
