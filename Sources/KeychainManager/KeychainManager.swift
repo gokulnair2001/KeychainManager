@@ -206,7 +206,7 @@ extension KeychainManager {
     ///   - object: Custom Codable object to save
     ///   - service: String to specify the service associated with this item
     ///   - account: Account name of keychain holder
-    /// - Returns: Returns the codable object stored
+    /// - Returns: Returns the Codable object stored
     public func get<T: Codable> (object: T, service: String, account: String) -> T? {
         
         guard let userData = KeychainManager().get(service: service, account: account) else {return nil}
@@ -430,6 +430,8 @@ extension KeychainManager {
         
         var query: [String: AnyObject] = [
             KMConstants.classType  :  kSecClassGenericPassword,
+            kSecImportItemIdentity as String : kSecClassIdentity,
+            kSecAttrCertificateType as String : kSecClassCertificate,
             KMConstants.service    :  service as AnyObject,
             //KMConstants.account    :  (keyPrefix + account) as AnyObject,
         ]
