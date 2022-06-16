@@ -265,7 +265,12 @@ extension KeychainManager {
         return userData
     }
     
-    //MARK: - CHECK ITEM PRESENT
+    //MARK: - VALIDATE SERVICE AND SERVER
+    /// Function to validate the provided Service and Account combination
+    /// - Parameters:
+    ///   - service: String to specify the service associated with this item
+    ///   - account: Account name of keychain holder
+    /// - Returns: Returns the validation result
     public func isValidService(service: String, account: String) -> Bool {
         
         let status = get(service: service, account: account).status
@@ -277,6 +282,11 @@ extension KeychainManager {
         return false
     }
     
+    /// Function to validate the provided Server and Account combination
+    /// - Parameters:
+    ///   - server: Contains the server's domain name or IP address
+    ///   - account: Account name of keychain holder
+    /// - Returns: Returns the validation result
     public func isValidServer(server: String, account: String) -> Bool {
         
         let status = get(server: server, account: account).status
