@@ -171,7 +171,6 @@ extension KeychainManager {
             KMConstants.classType   :  kSecClassGenericPassword,
             KMConstants.service     :  service as AnyObject,
             KMConstants.account     :  (keyPrefix + account) as AnyObject,
-           // KMConstants.returnAttributes : kCFBooleanTrue,
             KMConstants.returnData  :  kCFBooleanTrue,
             KMConstants.matchLimit  :  kSecMatchLimitOne
         ]
@@ -370,7 +369,7 @@ extension KeychainManager {
     public func update<T: Codable> (object: T, account: String) {
         
         guard let userData = try? JSONEncoder().encode(object) else { return }
-        
+        print("⏳\(userData)")
         do {
             try update(value: userData, account: account)
             
@@ -452,7 +451,7 @@ extension KeychainManager {
             throw KeychainError.unknown(status) }
     }
     
-    //MARK: DLETE WEB CREDENTIALS
+    //MARK: DELETE WEB CREDENTIALS
     /// FFunction to DELETE/REMOVE passwords saved on Keychain
     /// - Parameters:
     ///   - server: Contains the server's domain name or IP address
