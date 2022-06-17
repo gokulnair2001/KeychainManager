@@ -44,31 +44,31 @@ let KMC = KeychainManager(accessGroup: "TeamID.KeychainGroupID", synchronizable:
 ```swift
  let KMC = KeychainManager(keyPrefix: "test", accessGroup: "TeamID.KeychainGroupID", synchronizable: true)
 ```
-
-## 🔑 SET
+## Methods
+### 🔑 SET
 * Used to save data on keychain.
 * Keychain Manager Supports variety of data storage
 
 #### String
 ```swift
-
+KMC.set(value: "value", service: service_ID, account: account_name)
 ```
 #### Bool
 ```swift
-
+KMC.set(value: true, service: service_ID, account: account_name)
 ```
 #### Custom Object
 ```swift
-
+KMC.set(object: Codable_Object, service: service_ID, account: account_name)
 ```
 
 #### Web Credentials
 ```swift
-
+KMC.set(server: server_ID, account: account_name, password: password)
 ```
+**Tip: Make sure Account, Service & Server parameter must be unique for every item.**
 
-
-## 🔑 GET
+### 🔑 GET
 ## 🔑 UPDATE
 ## 🔑 DELETE
 ## 🔑 VALIDATE
@@ -82,3 +82,18 @@ let KMC = KeychainManager(accessGroup: "TeamID.KeychainGroupID", synchronizable:
 | WatchOS | 6.0.0 +|
 | MacOS | 11.0.0 + |
 | tvOS | 11.0.0 + |
+
+## SPM 📦
+Keychain Manger is available through [Swift Package Manager](https://github.com/apple/swift-package-manager/). To add Keychain Manager through SPM
+* Open project in Xcode
+* **Select ```File > Add Packages```**
+
+```swift
+https://github.com/gokulnair2001/KeychainManager
+```
+# Imageeee❌
+
+
+<p align="center" width="100%">
+   Made with ❤️ in 🇮🇳 By Gokul Nair   
+</p>
