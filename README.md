@@ -30,7 +30,7 @@ let KCM = KeychainManager()
 * ***Eg: A same app runningon two different devices with same iCloudID & To share data between Different apps running on same or different device***
 
 ```swift
-let KMC = KeychainManager(accessGroup: "TeamID.KeychainGroupID", synchronizable: true)
+let KCM = KeychainManager(accessGroup: "TeamID.KeychainGroupID", synchronizable: true)
 ```
 * To use this you need to enable the Keychain sharing in capabilities.
 * Here **TeamID** is which you get from your developer profile from [Developer Account](http://developer.apple.com).
@@ -42,37 +42,96 @@ let KMC = KeychainManager(accessGroup: "TeamID.KeychainGroupID", synchronizable:
 * When you need to add both prefix and sharable propert on keychain then this initialisation is the best one to use
 
 ```swift
- let KMC = KeychainManager(keyPrefix: "test", accessGroup: "TeamID.KeychainGroupID", synchronizable: true)
+ let KCM = KeychainManager(keyPrefix: "test", accessGroup: "TeamID.KeychainGroupID", synchronizable: true)
 ```
-## Methods
+## Basics
+
 ### 🔑 SET
+## 
 * Used to save data on keychain.
 * Keychain Manager Supports variety of data storage
 
 #### String
 ```swift
-KMC.set(value: "value", service: service_ID, account: account_name)
+KCM.set(value: "value", service: service_ID, account: account_name)
 ```
 #### Bool
 ```swift
-KMC.set(value: true, service: service_ID, account: account_name)
+KCM.set(value: true, service: service_ID, account: account_name)
 ```
 #### Custom Object
 ```swift
-KMC.set(object: Codable_Object, service: service_ID, account: account_name)
+KCM.set(object: Any_Codable_Object, service: service_ID, account: account_name)
 ```
 
 #### Web Credentials
 ```swift
-KMC.set(server: server_ID, account: account_name, password: password)
+KCM.set(server: server_ID, account: account_name, password: password)
 ```
 **Tip: Make sure Account, Service & Server parameter must be unique for every item.**
 
 ### 🔑 GET
-## 🔑 UPDATE
-## 🔑 DELETE
-## 🔑 VALIDATE
-## ☁️ iCloud Sync
+## 
+* Used to get Keychain Items. 
+* Keychain Manager helps to GET variety of format of Data from Keychain Storage
+
+#### String
+```swift
+let value = KCM.get(service: service_ID, account: account_name)
+```
+#### Bool
+```swift
+let value = KCM.getBool(service: service_ID, account: account_name)
+```
+#### Custom Object
+```swift
+ let value = KCM.get(object: Any_Codable_Object, service: service_ID, account: account_name)
+```
+
+#### Web Credentials
+```swift
+let value = KCM.get(server: server_ID, account: account_name)
+```
+
+#### Get All Values
+* **Generic Password**
+```swift
+ let value = KCM.getAllValues(secClass: .genericPassword)
+```
+* **Web Credentials**
+```swift
+ let value = KCM.getAllValues(secClass: .webCredentials)
+```
+
+### 🔑 UPDATE
+## 
+* Used to update Kechain Item Values
+* Since we have variety of SET and GET methods, similarly to update them we have variety of UPDATE methods
+
+#### String
+```swift
+KCM.update(value: "value", service: service_ID, account: account_name)
+```
+#### Bool
+```swift
+KCM.update(value: true, service: service_ID, account: account_name)
+```
+#### Custom Object
+```swift
+KCM.update(object: Any_Codable_Object, service: service_ID, account: account_name)
+```
+
+#### Web Credentials
+```swift
+KCM.update(server: server_ID, account: account_name, password: password)
+```
+
+### 🔑 DELETE
+## 
+### 🔑 VALIDATE
+## 
+### ☁️ iCloud Sync
+## 
 
 ### Device Supported
 | Device | Version |
