@@ -154,7 +154,26 @@ KCM.update(server: server_ID, account: account_name, password: password)
 ```
 
 ## 
+
 ### 🔑 VALIDATE
+* Is used to check if a certain Server or Service based keychain is valid/present.
+
+#### Service
+```swift
+ if KCMTest.isValidService(service: service_ID, account: account_name) {
+        print("🙂")
+ } else {
+        print("☹️")
+ }
+```
+#### Server
+```swift
+ if KCMTest.isValidService(server: server_ID, account: account_name) {
+        print("🙂")
+ } else {
+        print("☹️")
+ }
+```
 ## 
 ### ☁️ iCloud Sync
 ## 
