@@ -32,7 +32,7 @@ let KCM = KeychainManager()
 ```swift
 let KCM = KeychainManager(accessGroup: "TeamID.KeychainGroupID", synchronizable: true)
 ```
-* To use this you need to enable the Keychain sharing in capabilities.
+* To use this you need to enable the Keychain sharing in capabilities.([How to add Keychain Sharing Capability?]())
 * Here **TeamID** is which you get from your developer profile from [Developer Account](http://developer.apple.com).
 * **KeychainGroupID** is the string which you add in the Keychain Sharing Capability.
  
