@@ -129,6 +129,30 @@ KCM.update(server: server_ID, account: account_name, password: password)
 ##
 
 ### 🔑 DELETE
+* Used to delete Keychain Items
+
+#### Service Deletion
+```swift
+ do {
+    try KCMTest.delete(service: service_ID, isCustomObjectType: false)
+ }
+ catch {
+    print(error.localizedDescription)
+}
+```
+* **isCustomObjectType** is used to explicitly tell Keychain Manager to delete a custom Object type.
+* By default the value of **isCustomObjectType** is ```false```
+
+#### Server Deletion
+```swift
+ do {
+    try KCMTest.delete(server: server_ID)
+ }
+ catch {
+    print(error.localizedDescription)
+}
+```
+
 ## 
 ### 🔑 VALIDATE
 ## 
