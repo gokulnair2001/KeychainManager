@@ -6,7 +6,7 @@
 ### ⚙️ Intilisation
 Before using any Keychain Manager methods we need to intialise the class. Keychain Manager supports various types of inilisation which depends upon variety of use cases
 
-#### Basic Initialisation  
+#### 🗳 Basic Initialisation  
 * This initilisation stores all the Keychain items on the local device. 
 * Such initilisations are best used when the app is single login based.
 
@@ -16,7 +16,7 @@ let KCM = KeychainManager()
 
 ## 
 
-#### Prefix Initiliser
+#### 🗳 Prefix Initiliser
 * This initiliser helps to add a prefix value in your account string. 
 * Such initilisations are best used when performing tests (***Eg: test_account1_***).
 ```swift
@@ -24,7 +24,7 @@ let KCM = KeychainManager()
 ```
 ## 
 
-#### Sharable Initiliser
+#### 🗳 Sharable Initiliser
 * Keychain Manger allowes developers to share the keychain values to other apps also synchronise with iCloud.
 * Such initilisations are best used when you need to share Keychain values among apps.
 * ***Eg: A same app runningon two different devices with same iCloudID & To share data between Different apps running on same or different device***
@@ -38,13 +38,13 @@ let KCM = KeychainManager(accessGroup: "TeamID.KeychainGroupID", synchronizable:
  
 ## 
  
-#### Prefix + Sharable
+#### 🗳 Prefix + Sharable
 * When you need to add both prefix and sharable propert on keychain then this initialisation is the best one to use
 
 ```swift
  let KCM = KeychainManager(keyPrefix: "test", accessGroup: "TeamID.KeychainGroupID", synchronizable: true)
 ```
-## ⚙️ Basics
+## 🛠 Operations
 
 ### 🔑 SET 
 * Used to save data on keychain.
@@ -220,6 +220,14 @@ https://github.com/gokulnair2001/KeychainManager
 
 <img width="1306" alt="Screenshot 2022-06-17 at 3 38 39 PM" src="https://user-images.githubusercontent.com/56252259/174277607-d9dfe23c-701b-4362-b8e2-9cace0a8a574.png">
 
+## 🪄 How to contribute ?
+
+* Use the framework through SPM
+* If you face issues in any step open a new issue.
+* To fix issues: Fork this repository, make your changes and make a Pull Request.
+
+## ⚖️ License
+* Keychain Manager is available under GNU General Public [License](https://github.com/gokulnair2001/KeychainManager/blob/master/LICENSE).
 
 <p align="center" width="100%">
    Made with ❤️ in 🇮🇳 By Gokul Nair   
