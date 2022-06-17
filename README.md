@@ -1,10 +1,10 @@
 # Keychain Manager
 **Keychain Manager** is a Layer-2 framework built over Keychain API which helps in using Keychain in all your Apple devices with easiness and flexibility. It focuses on using all the power of Keychain with high simplicity. The easy to use methods of Keychain Manager helps to setup Keychain on any Apple device with great convenience.
 
-## Usage 📒
+## 📔 Usage
 
-### 🔑 Intilisation
-Before using any form of Keychain Manager methods we need to intialise the class. Keychain Manager supports various types of inilisation which depends upon variety of use cases
+### ⚙️ Intilisation
+Before using any Keychain Manager methods we need to intialise the class. Keychain Manager supports various types of inilisation which depends upon variety of use cases
 
 #### Basic Initialisation  
 * This initilisation stores all the Keychain items on the local device. 
@@ -38,8 +38,36 @@ let KMC = KeychainManager(accessGroup: "TeamID.KeychainGroupID", synchronizable:
  
 ## 
  
+#### Prefix + Sharable
+* When you need to add both prefix and sharable propert on keychain then this initialisation is the best one to use
+
+```swift
+ let KMC = KeychainManager(keyPrefix: "test", accessGroup: "TeamID.KeychainGroupID", synchronizable: true)
+```
+
 ## 🔑 SET
-* SET method is used save any Keychain item on  
+* Used to save data on keychain.
+* Keychain Manager Supports variety of data storage
+
+#### String
+```swift
+
+```
+#### Bool
+```swift
+
+```
+#### Custom Object
+```swift
+
+```
+
+#### Web Credentials
+```swift
+
+```
+
+
 ## 🔑 GET
 ## 🔑 UPDATE
 ## 🔑 DELETE
