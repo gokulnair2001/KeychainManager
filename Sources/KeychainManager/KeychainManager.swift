@@ -51,11 +51,11 @@ extension KeychainManager {
     fileprivate func set(value: Data, service: String, account: String) throws {
         
         var query: [String: AnyObject] = [
-            KMConstants.classType      :  kSecClassGenericPassword,
-            KMConstants.service        :  service as AnyObject,
-            KMConstants.account        :  (keyPrefix + account) as AnyObject,
-            KMConstants.valueData      :  value as AnyObject,
-            KMConstants.dataProtection :  kCFBooleanTrue as AnyObject,
+            KMConstants.classType.value()      :  kSecClassGenericPassword,
+            KMConstants.service.value()        :  service as AnyObject,
+            KMConstants.account.value()        :  (keyPrefix + account) as AnyObject,
+            KMConstants.valueData.value()      :  value as AnyObject,
+            KMConstants.dataProtection.value() :  kCFBooleanTrue as AnyObject,
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
@@ -124,11 +124,11 @@ extension KeychainManager {
         let encryptedPassword = password.data(using: .utf8)
         
         var query: [String : AnyObject] = [
-            KMConstants.classType  :  kSecClassInternetPassword,
-            KMConstants.account    :  user as AnyObject,
-            KMConstants.server     :  server as AnyObject,
-            KMConstants.valueData  :  encryptedPassword as AnyObject,
-            KMConstants.dataProtection : kCFBooleanTrue as AnyObject,
+            KMConstants.classType.value()      :  kSecClassInternetPassword,
+            KMConstants.account.value()        :  user as AnyObject,
+            KMConstants.server.value()         :  server as AnyObject,
+            KMConstants.valueData.value()      :  encryptedPassword as AnyObject,
+            KMConstants.dataProtection.value() : kCFBooleanTrue as AnyObject,
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
@@ -168,11 +168,11 @@ extension KeychainManager {
     fileprivate func get(service: String, account: String) -> (value: Data?, status: OSStatus) {
         
         var query: [String: AnyObject] = [
-            KMConstants.classType   :  kSecClassGenericPassword,
-            KMConstants.service     :  service as AnyObject,
-            KMConstants.account     :  (keyPrefix + account) as AnyObject,
-            KMConstants.returnData  :  kCFBooleanTrue,
-            KMConstants.matchLimit  :  kSecMatchLimitOne
+            KMConstants.classType.value()   :  kSecClassGenericPassword,
+            KMConstants.service.value()     :  service as AnyObject,
+            KMConstants.account.value()     :  (keyPrefix + account) as AnyObject,
+            KMConstants.returnData.value()  :  kCFBooleanTrue,
+            KMConstants.matchLimit.value()  :  kSecMatchLimitOne
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
@@ -234,11 +234,11 @@ extension KeychainManager {
     fileprivate func get(server: String, account: String) -> (password: Data?, status: OSStatus) {
         
         var query: [String: AnyObject] = [
-            KMConstants.classType   :  kSecClassInternetPassword,
-            KMConstants.account     :  account as AnyObject,
-            KMConstants.server      :  server as AnyObject,
-            KMConstants.returnData  :  kCFBooleanTrue,
-            KMConstants.matchLimit  :  kSecMatchLimitOne,
+            KMConstants.classType.value()   :  kSecClassInternetPassword,
+            KMConstants.account.value()     :  account as AnyObject,
+            KMConstants.server.value()      :  server as AnyObject,
+            KMConstants.returnData.value()  :  kCFBooleanTrue,
+            KMConstants.matchLimit.value()  :  kSecMatchLimitOne,
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
@@ -306,11 +306,11 @@ extension KeychainManager {
     public func getAllValues(secClass: secureClassType) -> [String:String] {
         
         var query: [String: AnyObject] = [
-            KMConstants.classType as String        :  secClass.value() as AnyObject,
-            KMConstants.returnData as String       :  kCFBooleanTrue,
-            KMConstants.returnAttributes as String :  kCFBooleanTrue,
-            KMConstants.returnReference as String  :  kCFBooleanTrue,
-            KMConstants.matchLimit as String       :  kSecMatchLimitAll
+            KMConstants.classType.value()        :  secClass.value() as AnyObject,
+            KMConstants.returnData.value()       :  kCFBooleanTrue,
+            KMConstants.returnAttributes.value() :  kCFBooleanTrue,
+            KMConstants.returnReference.value()  :  kCFBooleanTrue,
+            KMConstants.matchLimit.value()       :  kSecMatchLimitAll
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
@@ -344,13 +344,13 @@ extension KeychainManager {
     fileprivate func update(value: Data, account: String, service: String, isCustomObjectType: Bool = false)  throws {
         
         let attributes: [String: Any] = [
-            KMConstants.account    :  (keyPrefix + account) as AnyObject,
-            KMConstants.valueData  :  value,
+            KMConstants.account.value()    :  (keyPrefix + account) as AnyObject,
+            KMConstants.valueData.value()  :  value,
         ]
         
         var query: [String: AnyObject] = [
-            KMConstants.classType : kSecClassGenericPassword,
-            KMConstants.service   : service as AnyObject
+            KMConstants.classType.value() : kSecClassGenericPassword,
+            KMConstants.service.value()   : service as AnyObject
         ]
         if !isCustomObjectType {
             query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
@@ -416,13 +416,13 @@ extension KeychainManager {
     fileprivate func update(server: String, account: String, password: Data) throws {
         
         let attributes: [String: Any] = [
-            KMConstants.account    :  (keyPrefix + account) as AnyObject,
-            KMConstants.valueData  :  password as AnyObject,
+            KMConstants.account.value()    :  (keyPrefix + account) as AnyObject,
+            KMConstants.valueData.value()  :  password as AnyObject,
         ]
         
         var query: [String: AnyObject] = [
-            KMConstants.classType : kSecClassInternetPassword,
-            KMConstants.server    : server as AnyObject,
+            KMConstants.classType.value() : kSecClassInternetPassword,
+            KMConstants.server.value()    : server as AnyObject,
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
@@ -462,8 +462,8 @@ extension KeychainManager {
     public func delete(service: String, isCustomObjectType: Bool = false) throws {
         
         var query: [String: AnyObject] = [
-            KMConstants.classType  :  kSecClassGenericPassword,
-            KMConstants.service    :  service as AnyObject,
+            KMConstants.classType.value()  :  kSecClassGenericPassword,
+            KMConstants.service.value()    :  service as AnyObject,
         ]
         
         if !isCustomObjectType {
@@ -483,8 +483,8 @@ extension KeychainManager {
     public func delete(server: String) throws {
         
         var query: [String: AnyObject] = [
-            KMConstants.classType  :  kSecClassInternetPassword,
-            KMConstants.server     :  server as AnyObject,
+            KMConstants.classType.value()  :  kSecClassInternetPassword,
+            KMConstants.server.value()     :  server as AnyObject,
         ]
         
         query = addSyncIfRequired(queryItems: query, isSynchronizable: synchronizable)
@@ -503,8 +503,8 @@ extension KeychainManager {
         
         if isSynchronizable {
             var result: [String: AnyObject] = queryItems
-            result[KMConstants.accessGroup] = accessGroup as AnyObject
-            result[KMConstants.synchronizable] = isSynchronizable ? kCFBooleanTrue as AnyObject : kSecAttrSynchronizableAny as AnyObject
+            result[KMConstants.accessGroup.value()] = accessGroup as AnyObject
+            result[KMConstants.synchronizable.value()] = isSynchronizable ? kCFBooleanTrue as AnyObject : kSecAttrSynchronizableAny as AnyObject
             
             return result
         }
