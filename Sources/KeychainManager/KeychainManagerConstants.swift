@@ -7,41 +7,61 @@
 
 import Foundation
 
-public struct KMConstants {
+//MARK: - Keychain Manager Secure Storage Items
+/// The KMConstants enum returns the String value of CFString based Items
+enum KMConstants {
     
-    static var classType: String {return castToString(kSecClass)}
+    case classType
+    case service
+    case account
+    case valueData
+    case returnData
+    case returnReference
+    case returnAttributes
+    case matchLimit
+    case accessGroup
+    case server
+    case synchronizable
+    case dataProtection
+    case internetPassword
+    case genericPassword
     
-    static var service: String {return castToString(kSecAttrService)}
-    
-    static var account: String {return castToString(kSecAttrAccount)}
-    
-    static var valueData: String {return castToString(kSecValueData)}
-    
-    static var returnData: String {return castToString(kSecReturnData)}
-  
-    static var returnReference: String {return castToString(kSecReturnRef)}
-    
-    static var returnAttributes: String {return castToString(kSecReturnAttributes)}
-    
-    static var matchLimit: String {return castToString(kSecMatchLimit)}
-    
-    static var accessGroup: String {return castToString(kSecAttrAccessGroup)}
-    
-    static var server: String {return castToString(kSecAttrServer)}
-    
-    static var synchronizable: String {return castToString(kSecAttrSynchronizable)}
-    
-    static var dataProtection: String {return castToString(kSecUseDataProtectionKeychain)}
-    
-    //MARK: - Keychain Type
-    
-    static var internetPassword: String {return castToString(kSecClassInternetPassword)}
-    
-    static var genericPassword: String {return castToString(kSecClassGenericPassword)}
-    
-    //MARK: - Method to cast string type
-    
-    static func castToString(_ value: CFString) -> String {
+    /// Method to cast CFString to String
+    private func castToString(_ value: CFString) -> String {
         return value as String
+    }
+
+    /// Method to return value of KMConstants Selected
+    func value() -> String {
+        switch self {
+        case .classType:
+            return castToString(kSecClass)
+        case .service:
+            return castToString(kSecAttrService)
+        case .account:
+            return castToString(kSecAttrAccount)
+        case .valueData:
+            return castToString(kSecValueData)
+        case .returnData:
+            return castToString(kSecReturnData)
+        case .returnReference:
+            return castToString(kSecReturnRef)
+        case .returnAttributes:
+            return castToString(kSecReturnAttributes)
+        case .matchLimit:
+            return castToString(kSecMatchLimit)
+        case .accessGroup:
+            return castToString(kSecAttrAccessGroup)
+        case .server:
+            return castToString(kSecAttrServer)
+        case .synchronizable:
+            return castToString(kSecAttrSynchronizable)
+        case .dataProtection:
+            return castToString(kSecUseDataProtectionKeychain)
+        case .internetPassword:
+            return castToString(kSecClassInternetPassword)
+        case .genericPassword:
+            return castToString(kSecClassGenericPassword)
+        }
     }
 }

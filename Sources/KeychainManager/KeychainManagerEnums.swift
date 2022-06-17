@@ -9,7 +9,7 @@ import Foundation
 
 //MARK: - Keychain Error Type Enum
 
-enum KeychainError: Error {
+public enum KeychainError: Error {
     case duplicateEntry
     case unknown(OSStatus)
     case noPassword
@@ -25,9 +25,9 @@ public enum secureClassType {
     func value() -> String {
         switch self {
         case .webCredentials:
-            return KMConstants.internetPassword
+            return KMConstants.internetPassword.value()
         case .genericPassword:
-            return KMConstants.genericPassword
+            return KMConstants.genericPassword.value()
         }
     }
 }
