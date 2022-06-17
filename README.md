@@ -196,7 +196,9 @@ KCM.update(server: server_ID, account: account_name, password: password)
 Make sure you know these keynotes before using Keychain Manager
 * GET Bool will return false even after deleting the Keychain item.
 * To delete a custom object make sure you explicitly tell Keychain Manager that its a custom object in the delete method.
-* By enabling iCloud sync you also enable Keychain Access Group, thus adding Keychain Sharing capability is important ([How to do it?]()).
+* By enabling iCloud sync you also enable Keychain Access Group, thus adding Keychain Sharing capability is important ([How to do it?](https://github.com/gokulnair2001/KeychainManager#-keychain-sharing)).
+* Every Keychain item stored through MacOS is also saved in form of iOS, making it easy for developers to share same keychain data among all platforms. Thus keychain manager will give access to your MacOS based keychain items on other platforms too ([Read this](https://developer.apple.com/documentation/security/ksecusedataprotectionkeychain)).
+
 
 ## 📦 SPM 
 Keychain Manger is available through [Swift Package Manager](https://github.com/apple/swift-package-manager/). To add Keychain Manager through SPM
