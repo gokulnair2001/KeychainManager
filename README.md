@@ -169,13 +169,18 @@ KCM.update(server: server_ID, account: account_name, password: password)
 #### Server
 ```swift
  if KCMTest.isValidService(server: server_ID, account: account_name) {
-        print("🙂")
+     print("🙂")
  } else {
-        print("☹️")
+     print("☹️")
  }
 ```
-## 
+
+##
+
 ### ☁️ iCloud Sync
+* iCloud synchronisation needs to be set during initilisation.
+* Make sure to use the sharable initialisation at every method to save all changes on cloud.
+
 ## 
 
 ### Device Supported
