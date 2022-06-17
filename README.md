@@ -211,8 +211,7 @@ Keychain Manger is available through [Swift Package Manager](https://github.com/
 ```swift
 https://github.com/gokulnair2001/KeychainManager
 ```
-
-<img width="1089" alt="Screenshot 2022-06-17 at 3 43 38 PM" src="https://user-images.githubusercontent.com/56252259/174278528-3c7326ea-b90e-4c7a-a1f2-d445cd5e1013.png">
+<img width="1089" alt="SPM Dialogue" src="https://user-images.githubusercontent.com/56252259/174320479-34dc4437-34ba-49c9-880c-343ef337a485.png">
 
 ## 🌐 Keychain Sharing
 * Open your project target
