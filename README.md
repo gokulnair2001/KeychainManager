@@ -220,6 +220,8 @@ https://github.com/gokulnair2001/KeychainManager
 
 <img width="1306" alt="Screenshot 2022-06-17 at 3 38 39 PM" src="https://user-images.githubusercontent.com/56252259/174277607-d9dfe23c-701b-4362-b8e2-9cace0a8a574.png">
 
+* Make sure to use the same Keychain Item in other apps you add the Keychain access group ID of the initial project.
+
 ## 🪄 How to contribute ?
 
 * Use the framework through SPM
