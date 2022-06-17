@@ -32,7 +32,7 @@ let KCM = KeychainManager()
 ```swift
 let KCM = KeychainManager(accessGroup: "TeamID.KeychainGroupID", synchronizable: true)
 ```
-* To use this you need to enable the Keychain sharing in capabilities.([How to add Keychain Sharing Capability?]())
+* To use this you need to enable the Keychain sharing in capabilities. ([How to add Keychain Sharing Capability?](https://github.com/gokulnair2001/KeychainManager/edit/master/README.md#keychain-sharing))
 * Here **TeamID** is which you get from your developer profile from [Developer Account](http://developer.apple.com).
 * **KeychainGroupID** is the string which you add in the Keychain Sharing Capability.
  
@@ -192,7 +192,13 @@ KCM.update(server: server_ID, account: account_name, password: password)
 | MacOS | 11.0.0 + |
 | tvOS | 11.0.0 + |
 
-## SPM 📦
+## 📌 Keynotes
+Make sure you know these keynotes before using Keychain Manager
+* GET Bool will return false even after deleting the Keychain item.
+* To delete a custom object make sure you explicitly tell Keychain Manager that its a custom object in the delete method.
+* By enabling iCloud sync you also enable Keychain Access Group, thus adding Keychain Sharing capability is important ([How to do it?]()).
+
+## 📦 SPM 
 Keychain Manger is available through [Swift Package Manager](https://github.com/apple/swift-package-manager/). To add Keychain Manager through SPM
 * Open project in Xcode
 * **Select ```File > Add Packages```**
@@ -200,9 +206,18 @@ Keychain Manger is available through [Swift Package Manager](https://github.com/
 ```swift
 https://github.com/gokulnair2001/KeychainManager
 ```
-# Imageeee❌
 
-## 
+<img width="1089" alt="Screenshot 2022-06-17 at 3 43 38 PM" src="https://user-images.githubusercontent.com/56252259/174278528-3c7326ea-b90e-4c7a-a1f2-d445cd5e1013.png">
+
+## 🌐 Keychain Sharing
+* Open your project target
+* Select ```Signing & Capabilities``` option
+* Click plus button and search for ```Keychain Sharing```
+
+<img width="600" alt="Keychain Sharing Capability" src="https://user-images.githubusercontent.com/56252259/174277242-1f2a1491-44f5-422a-b69a-3a7a4a3fbea8.png">
+
+<img width="1306" alt="Screenshot 2022-06-17 at 3 38 39 PM" src="https://user-images.githubusercontent.com/56252259/174277607-d9dfe23c-701b-4362-b8e2-9cace0a8a574.png">
+
 
 <p align="center" width="100%">
    Made with ❤️ in 🇮🇳 By Gokul Nair   
