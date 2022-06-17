@@ -9,7 +9,7 @@ import Foundation
 
 //MARK: - Keychain Error Type Enum
 
-enum KeychainError: Error {
+public enum KeychainError: Error {
     case duplicateEntry
     case unknown(OSStatus)
     case noPassword
