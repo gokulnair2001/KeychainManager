@@ -94,11 +94,11 @@ let value = KCM.get(server: server_ID, account: account_name)
 ```
 
 #### Get All Values
-* **Generic Password**
+* Generic Password
 ```swift
  let value = KCM.getAllValues(secClass: .genericPassword)
 ```
-* **Web Credentials**
+* Web Credentials
 ```swift
  let value = KCM.getAllValues(secClass: .webCredentials)
 ```
@@ -202,6 +202,7 @@ https://github.com/gokulnair2001/KeychainManager
 ```
 # Imageeee❌
 
+## 
 
 <p align="center" width="100%">
    Made with ❤️ in 🇮🇳 By Gokul Nair   
