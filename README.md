@@ -44,10 +44,9 @@ let KCM = KeychainManager(accessGroup: "TeamID.KeychainGroupID", synchronizable:
 ```swift
  let KCM = KeychainManager(keyPrefix: "test", accessGroup: "TeamID.KeychainGroupID", synchronizable: true)
 ```
-## Basics
+## ⚙️ Basics
 
-### 🔑 SET
-## 
+### 🔑 SET 
 * Used to save data on keychain.
 * Keychain Manager Supports variety of data storage
 
@@ -70,8 +69,9 @@ KCM.set(server: server_ID, account: account_name, password: password)
 ```
 **Tip: Make sure Account, Service & Server parameter must be unique for every item.**
 
-### 🔑 GET
-## 
+##
+
+### 🔑 GET 
 * Used to get Keychain Items. 
 * Keychain Manager helps to GET variety of format of Data from Keychain Storage
 
@@ -102,9 +102,10 @@ let value = KCM.get(server: server_ID, account: account_name)
 ```swift
  let value = KCM.getAllValues(secClass: .webCredentials)
 ```
+##
 
-### 🔑 UPDATE
-## 
+### 🔑 UPDATE 
+
 * Used to update Kechain Item Values
 * Since we have variety of SET and GET methods, similarly to update them we have variety of UPDATE methods
 
@@ -125,6 +126,7 @@ KCM.update(object: Any_Codable_Object, service: service_ID, account: account_nam
 ```swift
 KCM.update(server: server_ID, account: account_name, password: password)
 ```
+##
 
 ### 🔑 DELETE
 ## 
