@@ -233,7 +233,10 @@ https://github.com/gokulnair2001/KeychainManager
 ## ⚖️ License
 * Keychain Manager is available under GNU General Public [License](https://github.com/gokulnair2001/KeychainManager/blob/master/LICENSE).
 
+## Like the framework ?
+* If you liked ```Keychain Manager``` do consider buying me a coffee 😊
 
+[<img width="200" alt="BMC logo+wordmark - Black" src="https://cdn.buymeacoffee.com/buttons/v2/default-red.png">](https://www.buymeacoffee.com/gokulnair)
 
 <p align="center" width="100%">
    Made with ❤️ in 🇮🇳 By Gokul Nair   
