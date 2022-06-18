@@ -29,7 +29,7 @@ let KCM = KeychainManager()
 #### 🗳 Sharable Initiliser
 * Keychain Manger allowes developers to share the keychain values to other apps also synchronise with iCloud.
 * Such initilisations are best used when you need to share Keychain values among apps.
-* ***Eg: A same app runningon two different devices with same iCloudID & To share data between Different apps running on same or different device***
+* ***Eg: A same app running on two different devices with same iCloudID & To share data between Different apps running on same or different device***
 
 ```swift
 let KCM = KeychainManager(accessGroup: "TeamID.KeychainGroupID", synchronizable: true)
