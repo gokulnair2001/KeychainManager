@@ -176,7 +176,7 @@ KCM.update(server: server_ID, account: account_name, password: password)
 * Make sure to use the sharable initialisation at every method to save all changes on cloud.
 
 
-## Device Supported
+## 📱 Device Supported
 | No | Device | Version |
 | -- | -- | -- |
 | 1 | iOS | 13.0.0 + |
