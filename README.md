@@ -8,7 +8,7 @@
 ### ⚙️ Intilisation
 Before using any Keychain Manager methods we need to intialise the class. Keychain Manager supports various types of inilisation which depends upon variety of use cases
 
-#### 🗳 Basic Initialisation  
+### 🗳 Basic Initialisation  
 * This initilisation stores all the Keychain items on the local device. 
 * Such initilisations are best used when the app is single login based.
 
@@ -16,17 +16,13 @@ Before using any Keychain Manager methods we need to intialise the class. Keycha
 let KCM = KeychainManager()
 ```
 
-## 
-
-#### 🗳 Prefix Initiliser
+### 🗳 Prefix Initiliser
 * This initiliser helps to add a prefix value in your account string. 
 * Such initilisations are best used when performing tests (***Eg: test_account1_***).
 ```swift
  let KCM = KeychainManager(keyPrefix: "test")
 ```
-## 
-
-#### 🗳 Sharable Initiliser
+### 🗳 Sharable Initiliser
 * Keychain Manger allowes developers to share the keychain values to other apps also synchronise with iCloud.
 * Such initilisations are best used when you need to share Keychain values among apps.
 * ***Eg: A same app running on two different devices with same iCloudID & To share data between Different apps running on same or different device***
@@ -38,9 +34,7 @@ let KCM = KeychainManager(accessGroup: "TeamID.KeychainGroupID", synchronizable:
 * Here **TeamID** is which you get from your developer profile from [Developer Account](http://developer.apple.com).
 * **KeychainGroupID** is the string which you add in the Keychain Sharing Capability.
  
-## 
- 
-#### 🗳 Prefix + Sharable
+### 🗳 Prefix + Sharable
 * When you need to add both prefix and sharable propert on keychain then this initialisation is the best one to use
 
 ```swift
@@ -48,7 +42,9 @@ let KCM = KeychainManager(accessGroup: "TeamID.KeychainGroupID", synchronizable:
 ```
 ## 🛠 Operations
 
-### 🔑 SET 
+Following are the methods which help to perfrom various operations:
+
+## 🔑 SET 
 * Used to save data on keychain.
 * Keychain Manager Supports variety of data storage
 
@@ -71,9 +67,8 @@ KCM.set(server: server_ID, account: account_name, password: password)
 ```
 **Tip: Make sure Account, Service & Server parameter must be unique for every item.**
 
-##
 
-### 🔑 GET 
+## 🔑 GET 
 * Used to get Keychain Items. 
 * Keychain Manager helps to GET variety of format of Data from Keychain Storage
 
@@ -104,9 +99,8 @@ let value = KCM.get(server: server_ID, account: account_name)
 ```swift
  let value = KCM.getAllValues(secClass: .webCredentials)
 ```
-##
 
-### 🔑 UPDATE 
+## 🔑 UPDATE 
 
 * Used to update Kechain Item Values
 * Since we have variety of SET and GET methods, similarly to update them we have variety of UPDATE methods
@@ -128,9 +122,8 @@ KCM.update(object: Any_Codable_Object, service: service_ID, account: account_nam
 ```swift
 KCM.update(server: server_ID, account: account_name, password: password)
 ```
-##
 
-### 🔑 DELETE
+## 🔑 DELETE
 * Used to delete Keychain Items
 
 #### Service Deletion
@@ -155,9 +148,7 @@ KCM.update(server: server_ID, account: account_name, password: password)
 }
 ```
 
-## 
-
-### 🔑 VALIDATE
+## 🔑 VALIDATE
 * Is used to check if a certain Server or Service based keychain is valid/present.
 
 #### Service
@@ -177,15 +168,12 @@ KCM.update(server: server_ID, account: account_name, password: password)
  }
 ```
 
-##
-
-### ☁️ iCloud Sync
+## ☁️ iCloud Sync
 * iCloud synchronisation needs to be set during initilisation.
 * Make sure to use the sharable initialisation at every method to save all changes on cloud.
 
-## 
 
-### Device Supported
+## Device Supported
 | No | Device | Version |
 | -- | -- | -- |
 | 1 | iOS | 13.0.0 + |
