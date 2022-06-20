@@ -22,6 +22,8 @@ let KCM = KeychainManager()
 ```swift
  let KCM = KeychainManager(keyPrefix: "test")
 ```
+
+
 ### 🗳 Sharable Initiliser
 * Keychain Manger allowes developers to share the keychain values to other apps also synchronise with iCloud.
 * Such initilisations are best used when you need to share Keychain values among apps.
@@ -33,6 +35,7 @@ let KCM = KeychainManager(accessGroup: "TeamID.KeychainGroupID", synchronizable:
 * To use this you need to enable the Keychain sharing in capabilities. ([How to add Keychain Sharing Capability?](https://github.com/gokulnair2001/KeychainManager#-keychain-sharing))
 * Here **TeamID** is which you get from your developer profile from [Developer Account](http://developer.apple.com).
 * **KeychainGroupID** is the string which you add in the Keychain Sharing Capability.
+ 
  
 ### 🗳 Prefix + Sharable
 * When you need to add both prefix and sharable propert on keychain then this initialisation is the best one to use
