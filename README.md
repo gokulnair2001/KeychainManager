@@ -162,7 +162,7 @@ KCM.update(server: server_ID, account: account_name, password: password)
 
 #### Service
 ```swift
- if KCMTest.isValidService(service: service_ID, account: account_name) {
+ if KCM.isValidService(service: service_ID, account: account_name) {
         print("🙂")
  } else {
         print("☹️")
@@ -170,7 +170,7 @@ KCM.update(server: server_ID, account: account_name, password: password)
 ```
 #### Server
 ```swift
- if KCMTest.isValidService(server: server_ID, account: account_name) {
+ if KCM.isValidService(server: server_ID, account: account_name) {
      print("🙂")
  } else {
      print("☹️")
